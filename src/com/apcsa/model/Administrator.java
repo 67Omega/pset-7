@@ -10,4 +10,3 @@ public class Administrator extends User {
     private String jobTitle;
 
 }
-//

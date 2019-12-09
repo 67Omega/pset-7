@@ -10,4 +10,3 @@ public class Teacher extends User {
     private String lastName;
 
 }
-//

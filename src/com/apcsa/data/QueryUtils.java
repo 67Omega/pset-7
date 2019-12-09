@@ -55,4 +55,3 @@ public class QueryUtils {
         "SELECT * FROM students " +
             "WHERE user_id = ?";
 }
-//
