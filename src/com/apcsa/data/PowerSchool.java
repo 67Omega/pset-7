@@ -83,8 +83,6 @@ public class PowerSchool {
                     if (affected != 1) {
                         System.err.println("Unable to update last login (affected rows: " + affected + ").");
                     }
-
-                    return new User(rs);
                 }
             }
         } catch (SQLException e) {
@@ -195,6 +193,30 @@ public class PowerSchool {
             conn.setAutoCommit(false);
             stmt.setString(1, ts.toString());
             stmt.setString(2, username);
+
+            if (stmt.executeUpdate() == 1) {
+                conn.commit();
+
+                return 1;
+            } else {
+                conn.rollback();
+
+                return -1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+            return -1;
+        }
+    }
+    
+
+    private static int updatePassword(Connection conn, String password, String username) {
+        try (PreparedStatement stmt = conn.prepareStatement(QueryUtils.UPDATE_PASSWORD_SQL)) {
+
+            conn.setAutoCommit(false);
+            stmt.setString(1, password);
+			stmt.setString(2, username);
 
             if (stmt.executeUpdate() == 1) {
                 conn.commit();

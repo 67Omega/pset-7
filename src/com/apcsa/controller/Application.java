@@ -3,6 +3,20 @@ package com.apcsa.controller;
 import java.util.Scanner;
 import com.apcsa.data.PowerSchool;
 import com.apcsa.model.User;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
+import com.apcsa.controller.Utils;
 
 public class Application {
 
@@ -51,6 +65,11 @@ public class Application {
 
                 if (isFirstLogin() && !activeUser.isRoot()) {
                     // first-time users need to change their passwords from the default provided
+                	System.out.print("Enter new password: ");
+                	String newPassword = in.next();
+                	String newPass = activeUser.setPassword(newPassword);
+					PowerSchool.updatePassword(conn, newPass, username);
+                	
                 }
 
                 // create and show the user interface

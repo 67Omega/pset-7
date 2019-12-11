@@ -32,6 +32,15 @@ public class QueryUtils {
         "WHERE username = ?";
     
     /*
+     * Updates password?
+     */
+    
+    public static final String UPDATE_PASSWORD_SQL =
+            "UPDATE users " +
+                "SET auth = ? " +
+            "WHERE username = ?";
+    
+    /*
      * Retrieves an administrator associated with a user account.
      */
 

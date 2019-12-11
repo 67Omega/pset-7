@@ -5,8 +5,6 @@ import java.sql.SQLException;
 
 import com.apcsa.model.User;
 
-
-
 public class Student extends User {
 	
 	private User user;
@@ -29,7 +27,4 @@ public class Student extends User {
 		this.firstName = rs.getString("first_name");
 		this.lastName = rs.getString("last_name");
 	}
-	
-	
-    
 }
