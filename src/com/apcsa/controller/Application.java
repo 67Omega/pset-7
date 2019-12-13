@@ -22,7 +22,7 @@ public class Application {
 
     private Scanner in;
     private User activeUser;
-
+    enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
     /**
      * Creates an instance of the Application class, which is responsible for interacting
      * with the user via the command line interface.
@@ -55,7 +55,7 @@ public class Application {
             String password = in.next();
 
             // if login is successful, update generic user to administrator, teacher, or student
-
+        try {
             if (login(username, password)) {
                 activeUser = activeUser.isAdministrator()
                     ? PowerSchool.getAdministrator(activeUser) : activeUser.isTeacher()
@@ -72,16 +72,139 @@ public class Application {
                 	
                 }
 
-                // create and show the user interface
-                //
-                // remember, the interface will be difference depending on the type
-                // of user that is logged in (root, administrator, teacher, student)
+                createAndShowUI();
             } else {
                 System.out.println("\nInvalid username and/or password.");
             }
+        } catch (Exception e) {
+        	shutdown(e);
         }
     }
 
+        public void createAndShowUI() {
+            System.out.println("\nHello, again, " + activeUser.getFirstName() + "!");
+
+            if (activeUser.isRoot()) {
+                showRootUI();
+            } else {
+                // TODO - add cases for admin, teacher, student, and unknown
+            }
+        }
+        
+        private void showRootUI() {
+            while (activeUser != null) {
+                switch (getRootMenuSelection()) {
+                    case PASSWORD: resetPassword(); break;
+                    case DATABASE: factoryReset(); break;
+                    case LOGOUT: logout(); break;
+                    case SHUTDOWN: shutdown(); break;
+                    default: System.out.println("\nInvalid selection."); break;
+                }
+            }
+        }
+        
+        /*
+         * Retrieves a root user's menu selection.
+         * 
+         * @return the menu selection
+         */
+
+        private RootAction getRootMenuSelection() {
+            System.out.println();
+            
+            System.out.println("[1] Reset user password.");
+            System.out.println("[2] Factory reset database.");
+            System.out.println("[3] Logout.");
+            System.out.println("[4] Shutdown.");
+            System.out.print("\n::: ");
+            
+            switch (Utils.getInt(in, -1)) {
+                case 1: return RootAction.PASSWORD;
+                case 2: return RootAction.DATABASE;
+                case 3: return RootAction.LOGOUT;
+                case 4: return RootAction.SHUTDOWN;
+                default: return null;
+            }
+         }
+        
+        /*
+         * Shuts down the application after encountering an error.
+         * 
+         * @param e the error that initiated the shutdown sequence
+         */
+
+        private void shutdown(Exception e) {
+            if (in != null) {
+                in.close();
+            }
+            
+            System.out.println("Encountered unrecoverable error. Shutting down...\n");
+            System.out.println(e.getMessage());
+                    
+            System.out.println("\nGoodbye!");
+            System.exit(0);
+        }
+
+        /*
+         * Releases all resources and kills the application.
+         */
+
+        private void shutdown() {        
+            System.out.println();
+                
+            if (Utils.confirm(in, "Are you sure? (y/n) ")) {
+                if (in != null) {
+                    in.close();
+                }
+                
+                System.out.println("\nGoodbye!");
+                System.exit(0);
+            }
+        }
+        
+        /*
+         * Allows a root user to reset another user's password.
+         */
+
+        private void resetPassword() {
+            //
+            // prompt root user to enter username of user whose password needs to be reset
+            //
+            // ask root user to confirm intent to reset the password for that username
+            //
+            // if confirmed...
+            //      call database method to reset password for username
+            //      print success message
+            //
+        }
+        
+        /*
+         * Resets the database to its factory settings.
+         */
+
+        private void factoryReset() {
+            //
+            // ask root user to confirm intent to reset the database
+            //
+            // if confirmed...
+            //      call database initialize method with parameter of true
+            //      print success message
+            //
+        }
+        
+        /*
+         * Logs out of the application.
+         */
+
+        private void logout() {
+            //
+            // ask root user to confirm intent to logout
+            //
+            // if confirmed...
+            //      set activeUser to null
+            //
+        }
+        
     /**
      * Logs in with the provided credentials.
      *
