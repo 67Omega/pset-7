@@ -78,7 +78,10 @@ public class Application {
             }
         } catch (Exception e) {
         	shutdown(e);
+        } finally {
+        	
         }
+      }
     }
 
         public void createAndShowUI() {
@@ -204,6 +207,8 @@ public class Application {
             //      set activeUser to null
             //
         }
+        
+        
         
     /**
      * Logs in with the provided credentials.
