@@ -223,9 +223,9 @@ public class PowerSchool {
     }
     
 
-    private static int updatePassword(Connection conn, String password, String username) {
-        try (PreparedStatement stmt = conn.prepareStatement(QueryUtils.UPDATE_PASSWORD_SQL)) {
-
+    public static int updatePassword(String password, String username) {
+        try (Connection conn = getConnection();
+        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.UPDATE_PASSWORD_SQL)) {
             conn.setAutoCommit(false);
             stmt.setString(1, password);
 			stmt.setString(2, username);

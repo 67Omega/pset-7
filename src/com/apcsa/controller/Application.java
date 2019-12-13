@@ -40,6 +40,7 @@ public class Application {
 
     /**
      * Starts the PowerSchool application.
+     * @param conn 
      */
 
     public void startup() {
@@ -68,7 +69,7 @@ public class Application {
                 	System.out.print("Enter new password: ");
                 	String newPassword = in.next();
                 	String newPass = activeUser.setPassword(newPassword);
-					PowerSchool.updatePassword(conn, newPass, username);
+					PowerSchool.updatePassword (newPass, username);
                 	
                 }
 
