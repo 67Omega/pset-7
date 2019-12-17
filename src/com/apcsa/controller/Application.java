@@ -23,6 +23,7 @@ public class Application {
     private Scanner in;
     private User activeUser;
     enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
+    enum StudentAction { COURSEGRADE, ASSIGNMENTGRADE, PASSWORD, LOGOUT }
     /**
      * Creates an instance of the Application class, which is responsible for interacting
      * with the user via the command line interface.
@@ -92,9 +93,13 @@ public class Application {
             if (activeUser.isRoot()) {
                 showRootUI();
             } else if (activeUser.isStudent()){
-                System.out.println("really?");
-            } else{
-            	System.out.println("why?");
+                showStudentUI();
+            } else if (activeUser.isTeacher()){
+            	showTeacherUI();
+            } else if (activeUser.isAdministrator()) {
+            	showAdministratorUI();
+            } else {
+            	
             }
         }
         
@@ -110,6 +115,41 @@ public class Application {
             }
         }
         
+        private void showStudentUI() {
+            while (activeUser != null) {
+                switch (getStudentMenuSelection()) {
+                    case COURSEGRADE: viewCourseGrades(); break;
+                    case ASSIGNMENTGRADE: viewAssignmentGrades(); break;
+                    case PASSWORD: changePassword(); break;
+                    case LOGOUT: logout(); break;
+                    default: System.out.println("\nInvalid selection."); break;
+                }
+            }
+        }
+        
+        private void showTeacherUI() {
+            while (activeUser != null) {
+                switch (getRootMenuSelection()) {
+                    case PASSWORD: resetPassword(); break;
+                    case DATABASE: factoryReset(); break;
+                    case LOGOUT: logout(); break;
+                    case SHUTDOWN: shutdown(); break;
+                    default: System.out.println("\nInvalid selection."); break;
+                }
+            }
+        }
+        
+        private void showAdministratorUI() {
+            while (activeUser != null) {
+                switch (getRootMenuSelection()) {
+                    case PASSWORD: resetPassword(); break;
+                    case DATABASE: factoryReset(); break;
+                    case LOGOUT: logout(); break;
+                    case SHUTDOWN: shutdown(); break;
+                    default: System.out.println("\nInvalid selection."); break;
+                }
+            }
+        }
         /*
          * Retrieves a root user's menu selection.
          * 
@@ -130,6 +170,24 @@ public class Application {
                 case 2: return RootAction.DATABASE;
                 case 3: return RootAction.LOGOUT;
                 case 4: return RootAction.SHUTDOWN;
+                default: return null;
+            }
+         }
+        
+        private StudentAction getStudentMenuSelection() {
+            System.out.println();
+            
+            System.out.println("[1] View course grades.");
+            System.out.println("[2] View assignment grades by course.");
+            System.out.println("[3] Change password.");
+            System.out.println("[4] Logout.");
+            System.out.print("\n::: ");
+            
+            switch (Utils.getInt(in, -1)) {
+                case 1: return StudentAction.COURSEGRADE;
+                case 2: return StudentAction.ASSIGNMENTGRADE;
+                case 3: return StudentAction.PASSWORD;
+                case 4: return StudentAction.LOGOUT;
                 default: return null;
             }
          }
@@ -204,12 +262,16 @@ public class Application {
          */
 
         private void logout() {
-            //
-            // ask root user to confirm intent to logout
-            //
-            // if confirmed...
-            //      set activeUser to null
-            //
+            String response = "c";
+            System.out.println("Are you sure? (y/n)");
+            response = in.next();
+            if (response.equals("y") {
+            	
+            } else if (response.equals("n"))) {
+            	break;
+            } else {
+            	System.out.println("Invalid input.");
+            }
         }
         
         

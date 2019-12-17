@@ -43,6 +43,7 @@ public class Student extends User {
 	}
 	
 	
+	
 	public double getGpa() {
 		// TODO Auto-generated method stub
 		return gpa;
@@ -52,4 +53,5 @@ public class Student extends User {
 		// TODO Auto-generated method stub
 		
 	}
+
 }
