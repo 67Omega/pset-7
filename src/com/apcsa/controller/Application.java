@@ -78,6 +78,7 @@ public class Application {
                 System.out.println("\nInvalid username and/or password.");
             }
         } catch (Exception e) {
+        	System.out.println(e);
         	shutdown(e);
         } finally {
         	
@@ -90,8 +91,10 @@ public class Application {
 
             if (activeUser.isRoot()) {
                 showRootUI();
-            } else {
-                // TODO - add cases for admin, teacher, student, and unknown
+            } else if (activeUser.isStudent()){
+                System.out.println("really?");
+            } else{
+            	System.out.println("why?");
             }
         }
         

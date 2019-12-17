@@ -27,7 +27,22 @@ public class Student extends User {
 		this.firstName = rs.getString("first_name");
 		this.lastName = rs.getString("last_name");
 	}
-
+	
+	public int getStudentID() {
+		return studentId;
+	}
+	
+	public String getFirstName() {
+		return firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public int getClassRank() {
+		return classRank;
+	}
+	
+	
 	public double getGpa() {
 		// TODO Auto-generated method stub
 		return gpa;

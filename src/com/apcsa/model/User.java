@@ -12,6 +12,9 @@ public class User {
     private String username;
     private String password;
     private String lastLogin;
+    public Teacher teacher;
+    public Student student;
+    public Administrator administrator;
 
     /**
      * Creates an instance of the User class.
