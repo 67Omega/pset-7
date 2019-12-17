@@ -71,10 +71,8 @@ public class PowerSchool {
     public static User login(String username, String password) {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(QueryUtils.LOGIN_SQL)) {
-
             stmt.setString(1, username);
             stmt.setString(2, Utils.getHash(password));
-
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     Timestamp ts = new Timestamp(new Date().getTime());
@@ -83,12 +81,12 @@ public class PowerSchool {
                     if (affected != 1) {
                         System.err.println("Unable to update last login (affected rows: " + affected + ").");
                     }
+                    return new User(rs);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
