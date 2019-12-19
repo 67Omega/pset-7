@@ -118,8 +118,8 @@ public class Application {
         private void showStudentUI() {
             while (activeUser != null) {
                 switch (getStudentMenuSelection()) {
-                    case COURSEGRADE: viewCourseGrades(); break;
-                    case ASSIGNMENTGRADE: viewAssignmentGrades(); break;
+                   // case COURSEGRADE: viewCourseGrades(); break;
+                    //case ASSIGNMENTGRADE: viewAssignmentGrades(); break;
                     case PASSWORD: changePassword(); break;
                     case LOGOUT: logout(); break;
                     default: System.out.println("\nInvalid selection."); break;
@@ -265,10 +265,9 @@ public class Application {
             String response = "c";
             System.out.println("Are you sure? (y/n)");
             response = in.next();
-            if (response.equals("y") {
+            if (response.equals("y")) {
             	
-            } else if (response.equals("n"))) {
-            	break;
+            } else if (response.equals("n")) {
             } else {
             	System.out.println("Invalid input.");
             }
@@ -307,6 +306,12 @@ public class Application {
      *
      * @param args unused command line argument list
      */
+    public void changePassword() {
+    	System.out.print("Enter new password: ");
+    	String newPassword = in.next();
+    	String newPass = activeUser.setPassword(newPassword);
+		PowerSchool.updatePassword (newPass, activeUser.getUsername());
+    }
 
     public static void main(String[] args) {
         Application app = new Application();
