@@ -307,10 +307,20 @@ public class Application {
      * @param args unused command line argument list
      */
     public void changePassword() {
+    	System.out.print("Enter current password: ");
+    	String passwordCheck = in.next();
     	System.out.print("Enter new password: ");
     	String newPassword = in.next();
-    	String newPass = activeUser.setPassword(newPassword);
-		PowerSchool.updatePassword (newPass, activeUser.getUsername());
+    	
+    	passwordCheck =Utils.getHash(passwordCheck);
+    	
+    	if (!(passwordCheck.equals(activeUser.getPassword()))) {
+    		System.out.print("Invalid current password.");
+    	} else {
+    		String newPass = activeUser.setPassword(newPassword);
+			PowerSchool.updatePassword(newPass, activeUser.username);
+			System.out.print("Successfully changed password.");
+    	}
     }
 
     public static void main(String[] args) {
