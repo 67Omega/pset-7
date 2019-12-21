@@ -312,14 +312,12 @@ public class Application {
     	System.out.print("Enter new password: ");
     	String newPassword = in.next();
     	
-    	passwordCheck =Utils.getHash(passwordCheck);
-    	
     	if (!(passwordCheck.equals(activeUser.getPassword()))) {
-    		System.out.print("Invalid current password.");
+    		System.out.println("Invalid current password.");
     	} else {
     		String newPass = activeUser.setPassword(newPassword);
-			PowerSchool.updatePassword(newPass, activeUser.username);
-			System.out.print("Successfully changed password.");
+			PowerSchool.updatePassword(newPass, activeUser.getUsername());
+			System.out.println("Successfully changed password.");
     	}
     }
 
