@@ -11,7 +11,7 @@ public class User {
     private String accountType;
     private String username;
     private String password;
-    private String lastLogin;
+    public String lastLogin;
     public Teacher teacher;
     public Student student;
     public Administrator administrator;
@@ -48,6 +48,10 @@ public class User {
         this.password = password;
         this.lastLogin = lastLogin;
     }
+    
+    public void setLoginTime(String lastLogin) {
+    	this.lastLogin = lastLogin;
+    }
 
     /**
      * @return userId
@@ -82,8 +86,8 @@ public class User {
     }
 
     public String setPassword(String newPassword) {
-		this.password = newPassword;
-		String newPass = newPassword;
+		this.password = Utils.getHash(newPassword);
+		String newPass = Utils.getHash(newPassword);
 		return newPass;
     }
     

@@ -76,7 +76,7 @@ public class PowerSchool {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     Timestamp ts = new Timestamp(new Date().getTime());
-                    int affected = PowerSchool.updateLastLogin(conn, username, ts);
+                    int affected = PowerSchool.updateLastLogin(conn, username, ts.toString());
 
                     if (affected != 1) {
                         System.err.println("Unable to update last login (affected rows: " + affected + ").");
@@ -125,6 +125,22 @@ public class PowerSchool {
         //
         // execute the update statement
         //
+    	String password = Utils.getHash(username);
+    	try (Connection conn = getConnection();
+            	PreparedStatement stmt = conn.prepareStatement(QueryUtils.UPDATE_PASSWORD_SQL)) {
+                conn.setAutoCommit(false);
+                stmt.setString(1, password);
+    			stmt.setString(2, username);
+    			updateLastLogin(conn, username, "0000-00-00 00:00:00");
+    			
+                if (stmt.executeUpdate() == 1) {
+                    conn.commit();
+                } else {
+                    conn.rollback();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
     }
     
     /**
@@ -197,7 +213,7 @@ public class PowerSchool {
      * @return the number of affected rows
      */
 
-    private static int updateLastLogin(Connection conn, String username, Timestamp ts) {
+    private static int updateLastLogin(Connection conn, String username, String ts) {
         try (PreparedStatement stmt = conn.prepareStatement(QueryUtils.UPDATE_LAST_LOGIN_SQL)) {
 
             conn.setAutoCommit(false);

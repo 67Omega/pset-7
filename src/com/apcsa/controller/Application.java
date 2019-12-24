@@ -37,6 +37,7 @@ public class Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("PowerSchool -- now for students, teachers, and school administrators!");
     }
 
     /**
@@ -45,7 +46,7 @@ public class Application {
      */
 
     public void startup() {
-        System.out.println("PowerSchool -- now for students, teachers, and school administrators!");
+        
 
         // continuously prompt for login credentials and attempt to login
 
@@ -232,9 +233,20 @@ public class Application {
          */
 
         private void resetPassword() {
-            //
-            // prompt root user to enter username of user whose password needs to be reset
-            //
+            
+            System.out.print("\nUsername: ");
+            String usernameForReset = in.next();
+            
+            String response = "c";
+            System.out.print("\nAre you sure you want to reset the password for " + usernameForReset + "? (y/n) ");
+            response = in.next();
+            if (response.equals("y")) {
+            	PowerSchool.resetPassword(usernameForReset);
+            	System.out.println("Successfully reset password for " + usernameForReset + ".");
+            } else if (response.equals("n")) {
+            } else {
+            	System.out.println("Invalid input.");
+            }
             // ask root user to confirm intent to reset the password for that username
             //
             // if confirmed...
@@ -255,6 +267,16 @@ public class Application {
             //      call database initialize method with parameter of true
             //      print success message
             //
+        	String response = "c";
+            System.out.print("\nAre you sure you want to reset all settings and data? (y/n) ");
+            response = in.next();
+            if (response.equals("y")) {
+            	PowerSchool.initialize(true);
+            	System.out.println("Successfully reset database.");
+            } else if (response.equals("n")) {
+            } else {
+            	System.out.println("Invalid input.");
+            }
         }
         
         /*
@@ -263,11 +285,12 @@ public class Application {
 
         private void logout() {
             String response = "c";
-            System.out.println("Are you sure? (y/n)");
+            System.out.print("\nAre you sure? (y/n) ");
             response = in.next();
             if (response.equals("y")) {
-            	
+            	startup();
             } else if (response.equals("n")) {
+            	
             } else {
             	System.out.println("Invalid input.");
             }
