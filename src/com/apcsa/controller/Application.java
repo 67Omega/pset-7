@@ -24,6 +24,7 @@ public class Application {
     private User activeUser;
     enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
     enum StudentAction { COURSEGRADE, ASSIGNMENTGRADE, PASSWORD, LOGOUT }
+    enum AdminAction { FACULTY, FACULTY_BY_DEP, STUDENT, STUDENT_GRADE, STUDENT_COURSE, PASSWORD, LOGOUT }
     /**
      * Creates an instance of the Application class, which is responsible for interacting
      * with the user via the command line interface.
@@ -46,11 +47,7 @@ public class Application {
      */
 
     public void startup() {
-        
-
-        // continuously prompt for login credentials and attempt to login
-
-        while (true) {
+       while (true) {
             System.out.print("\nUsername: ");
             String username = in.next();
 
@@ -142,11 +139,14 @@ public class Application {
         
         private void showAdministratorUI() {
             while (activeUser != null) {
-                switch (getRootMenuSelection()) {
-                    case PASSWORD: resetPassword(); break;
-                    case DATABASE: factoryReset(); break;
+                switch (getAdminMenuSelection()) {
+                    case FACULTY: resetPassword(); break;
+                    case FACULTY_BY_DEP: factoryReset(); break;
+                    case STUDENT: logout(); break;
+                    case STUDENT_GRADE: shutdown(); break;
+                    case STUDENT_COURSE: shutdown(); break;
+                    case PASSWORD: changePassword(); break;
                     case LOGOUT: logout(); break;
-                    case SHUTDOWN: shutdown(); break;
                     default: System.out.println("\nInvalid selection."); break;
                 }
             }
@@ -193,6 +193,29 @@ public class Application {
             }
          }
         
+        private AdminAction getAdminMenuSelection() {
+        	System.out.println();
+            
+            System.out.println("[1] View faculty.");
+            System.out.println("[2] View faculty by department.");
+            System.out.println("[3] View student enrollment.");
+            System.out.println("[4] View student enrollment by grade.");
+            System.out.println("[5] View student enrollment by course.");
+            System.out.println("[6] Change password.");
+            System.out.println("[7] Logout.");
+            System.out.print("\n::: ");
+            
+            switch (Utils.getInt(in, -1)) {
+                case 1: return AdminAction.FACULTY;
+                case 2: return AdminAction.FACULTY_BY_DEP;
+                case 3: return AdminAction.STUDENT;
+                case 4: return AdminAction.STUDENT_GRADE;
+                case 5: return AdminAction.STUDENT_COURSE;
+                case 6: return AdminAction.PASSWORD;
+                case 7: return AdminAction.LOGOUT;
+                default: return null;
+            }
+        }
         /*
          * Shuts down the application after encountering an error.
          * 
