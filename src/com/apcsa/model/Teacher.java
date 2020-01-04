@@ -9,6 +9,7 @@ public class Teacher extends User {
 
     private int teacherId;
     private int departmentId;
+    private String deptName;
     private String firstName;
     private String lastName;
     
@@ -19,7 +20,32 @@ public class Teacher extends User {
 		this.firstName = rs.getString("first_name");
 		this.lastName = rs.getString("last_name");
 	}
+    
+    public Teacher(ResultSet rs) throws SQLException {
+		super(-1, "teacher", null, null, null);
+		this.teacherId = rs.getInt("teacher_id");
+		this.departmentId = rs.getInt("department_id");
+		this.firstName = rs.getString("first_name");
+		this.lastName = rs.getString("last_name");
+		this.deptName = rs.getString("title");
+	}
+
     public String getFirstName() {
 		return firstName;
+	}
+    public String getLastName() {
+		return lastName;
+	}
+    
+    public int getTeacherId() {
+		return teacherId;
+	}
+
+	public int getDepartmentId() {
+		return departmentId;
+	}
+	
+	public String getDeptName() {
+		return deptName;
 	}
 }

@@ -2,6 +2,9 @@ package com.apcsa.controller;
 
 import java.util.Scanner;
 import com.apcsa.data.PowerSchool;
+import com.apcsa.data.QueryUtils;
+import com.apcsa.model.Administrator;
+import com.apcsa.model.Teacher;
 import com.apcsa.model.User;
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,11 +18,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import com.apcsa.controller.Utils;
 
 public class Application {
-
     private Scanner in;
     private User activeUser;
     enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
@@ -85,8 +88,8 @@ public class Application {
       }
     }
 
-        public void createAndShowUI() {
-            System.out.println("\nHello, again, " + activeUser.getFirstName() + "!");
+        public void createAndShowUI() throws ClassNotFoundException, SQLException {
+            System.out.print("\nHello, again, " + activeUser.getFirstName() + "!");
 
             if (activeUser.isRoot()) {
                 showRootUI();
@@ -137,10 +140,10 @@ public class Application {
             }
         }
         
-        private void showAdministratorUI() {
+        private void showAdministratorUI() throws ClassNotFoundException, SQLException {
             while (activeUser != null) {
                 switch (getAdminMenuSelection()) {
-                    case FACULTY: resetPassword(); break;
+                    case FACULTY: showFaculty(); break;
                     case FACULTY_BY_DEP: factoryReset(); break;
                     case STUDENT: logout(); break;
                     case STUDENT_GRADE: shutdown(); break;
@@ -157,10 +160,22 @@ public class Application {
          * @return the menu selection
          */
 
-        private RootAction getRootMenuSelection() {
+        private void showFaculty() throws ClassNotFoundException, SQLException {
+        	ArrayList<Teacher> teachers = PowerSchool.showFaculty();
+        	int counter = 1;
+        	for(Teacher i: teachers) {
+        		System.out.print("\n" + counter + ". ");
+        		System.out.print(i.getFirstName() + ", ");
+        		System.out.print(i.getLastName() + " / ");
+        		System.out.print(i.getDeptName());
+        		counter++;
+        	}  
+		}
+
+		private RootAction getRootMenuSelection() {
             System.out.println();
             
-            System.out.println("[1] Reset user password.");
+            System.out.println("\n[1] Reset user password.");
             System.out.println("[2] Factory reset database.");
             System.out.println("[3] Logout.");
             System.out.println("[4] Shutdown.");
@@ -178,7 +193,7 @@ public class Application {
         private StudentAction getStudentMenuSelection() {
             System.out.println();
             
-            System.out.println("[1] View course grades.");
+            System.out.println("\n[1] View course grades.");
             System.out.println("[2] View assignment grades by course.");
             System.out.println("[3] Change password.");
             System.out.println("[4] Logout.");
@@ -196,7 +211,7 @@ public class Application {
         private AdminAction getAdminMenuSelection() {
         	System.out.println();
             
-            System.out.println("[1] View faculty.");
+            System.out.println("\n[1] View faculty.");
             System.out.println("[2] View faculty by department.");
             System.out.println("[3] View student enrollment.");
             System.out.println("[4] View student enrollment by grade.");
@@ -265,10 +280,10 @@ public class Application {
             response = in.next();
             if (response.equals("y")) {
             	PowerSchool.resetPassword(usernameForReset);
-            	System.out.println("Successfully reset password for " + usernameForReset + ".");
+            	System.out.print("Successfully reset password for " + usernameForReset + ".");
             } else if (response.equals("n")) {
             } else {
-            	System.out.println("Invalid input.");
+            	System.out.print("Invalid input.");
             }
             // ask root user to confirm intent to reset the password for that username
             //
@@ -345,6 +360,8 @@ public class Application {
         return activeUser.getLastLogin().equals("0000-00-00 00:00:00.000");
     }
 
+ 
+    
     /////// MAIN METHOD ///////////////////////////////////////////////////////////////////
 
     /*

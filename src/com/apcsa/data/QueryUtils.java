@@ -56,6 +56,12 @@ public class QueryUtils {
         "SELECT * FROM teachers " +
             "WHERE user_id = ?";
     
+    public static String GET_FACULTY_SQL = 
+            "SELECT * FROM teachers " +
+            "INNER JOIN departments " +
+            "ON teachers.department_id = departments.department_id " +
+            "ORDER BY teachers.first_name";
+    
     /*
      * Retrieves a student associated with a user account.
      */

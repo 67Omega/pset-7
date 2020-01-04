@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import com.apcsa.controller.Utils;
 import com.apcsa.model.Administrator;
@@ -89,6 +90,24 @@ public class PowerSchool {
         }
         return null;
     }
+
+    public static ArrayList<Teacher> showFaculty() throws ClassNotFoundException, SQLException {
+        ArrayList<Teacher> teachers = new ArrayList<>();
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_FACULTY_SQL)) {
+
+               try (ResultSet rs = stmt.executeQuery()) {
+                
+                   while (rs.next()) {
+                	  teachers.add(new Teacher(rs));
+                   }
+               }
+           } catch (SQLException e) {
+               e.printStackTrace();
+           }
+        return teachers;
+      }
+
 
     /**
      * Returns the administrator account associated with the user.
