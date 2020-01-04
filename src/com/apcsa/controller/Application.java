@@ -28,6 +28,7 @@ public class Application {
     enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
     enum StudentAction { COURSEGRADE, ASSIGNMENTGRADE, PASSWORD, LOGOUT }
     enum AdminAction { FACULTY, FACULTY_BY_DEP, STUDENT, STUDENT_GRADE, STUDENT_COURSE, PASSWORD, LOGOUT }
+    enum DeptList { CS, ENGLISH, HISTORY, MATH, PHYS_ED, SCIENCE }
     /**
      * Creates an instance of the Application class, which is responsible for interacting
      * with the user via the command line interface.
@@ -144,7 +145,7 @@ public class Application {
             while (activeUser != null) {
                 switch (getAdminMenuSelection()) {
                     case FACULTY: showFaculty(); break;
-                    case FACULTY_BY_DEP: factoryReset(); break;
+                    case FACULTY_BY_DEP: showDepartmentUI(); break;
                     case STUDENT: logout(); break;
                     case STUDENT_GRADE: shutdown(); break;
                     case STUDENT_COURSE: shutdown(); break;
@@ -153,6 +154,19 @@ public class Application {
                     default: System.out.println("\nInvalid selection."); break;
                 }
             }
+        }
+        
+        private void showDepartmentUI() throws ClassNotFoundException, SQLException {
+            
+                switch (getDepartmentSelection()) {
+                    case CS: selectDepartment(1); break;
+                    case ENGLISH: selectDepartment(2); break;
+                    case HISTORY: selectDepartment(3); break;
+                    case MATH: selectDepartment(4); break;
+                    case PHYS_ED: selectDepartment(5); break;
+                    case SCIENCE: selectDepartment(6); break;
+                    default: System.out.println("\nInvalid selection."); break;
+                }
         }
         /*
          * Retrieves a root user's menu selection.
@@ -169,6 +183,20 @@ public class Application {
         		System.out.print(i.getLastName() + " / ");
         		System.out.print(i.getDeptName());
         		counter++;
+        	}  
+		}
+        
+        private void selectDepartment(int department_id) throws ClassNotFoundException, SQLException {
+        	ArrayList<Teacher> teachers = PowerSchool.showFaculty();
+        	int counter = 1;
+        	for(Teacher i: teachers) {
+        		if (i.getDepartmentId() == department_id) {
+        			System.out.print("\n" + counter + ". ");
+        			System.out.print(i.getFirstName() + ", ");
+        			System.out.print(i.getLastName() + " / ");
+        			System.out.print(i.getDeptName());
+        			counter++;
+        		}
         	}  
 		}
 
@@ -189,6 +217,8 @@ public class Application {
                 default: return null;
             }
          }
+		
+		
         
         private StudentAction getStudentMenuSelection() {
             System.out.println();
@@ -228,8 +258,28 @@ public class Application {
                 case 5: return AdminAction.STUDENT_COURSE;
                 case 6: return AdminAction.PASSWORD;
                 case 7: return AdminAction.LOGOUT;
-                default: return null;
+            default: return null;
             }
+        }
+        
+        private DeptList getDepartmentSelection() {
+        	System.out.println("\n[1] Computer Science.");
+            System.out.println("[2] English.");
+            System.out.println("[3] History.");
+            System.out.println("[4] Mathematics.");
+            System.out.println("[5] Physical Education.");
+            System.out.println("[6] Science.");
+            System.out.print("\n::: ");
+            
+            switch (Utils.getInt(in, -1)) {
+            	case 1: return DeptList.CS;
+            	case 2: return DeptList.ENGLISH;
+            	case 3: return DeptList.HISTORY;
+            	case 4: return DeptList.MATH;
+            	case 5: return DeptList.PHYS_ED;
+            	case 6: return DeptList.SCIENCE;
+            default: return null;
+        }
         }
         /*
          * Shuts down the application after encountering an error.
