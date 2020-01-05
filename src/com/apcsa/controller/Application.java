@@ -212,6 +212,21 @@ public class Application {
         	}  
 		}
         
+        //todo please Alex finish this with the triple join crap
+        private void studentsCourse(String course_id) throws ClassNotFoundException, SQLException {
+        	ArrayList<Student> students = PowerSchool.showStudents();
+        	int counter = 1;
+        	for(Student i: students) {
+        		if (true) {
+        			System.out.print("\n" + counter + ". ");
+        			System.out.print(i.getLastName() + ", ");
+        			System.out.print(i.getFirstName() + " / #");
+        			System.out.print(i.getClassRank());
+        			counter++;
+        		}
+        	}  
+		}
+        
         private void showDepartmentUI() throws ClassNotFoundException, SQLException {
             
                 switch (getDepartmentSelection()) {

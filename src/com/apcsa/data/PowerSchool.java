@@ -108,6 +108,23 @@ public class PowerSchool {
         return teachers;
       }
 
+    public static ArrayList<Student> showStudentsCourse() throws ClassNotFoundException, SQLException {
+        ArrayList<Student> students = new ArrayList<>();
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENTS_COURSE)) {
+
+               try (ResultSet rs = stmt.executeQuery()) {
+                
+                   while (rs.next()) {
+                	  students.add(new Student(rs));
+                   }
+               }
+           } catch (SQLException e) {
+               e.printStackTrace();
+           }
+        return students;
+      }
+    
     public static ArrayList<Student> showStudents() throws ClassNotFoundException, SQLException {
         ArrayList<Student> students = new ArrayList<>();
         try (Connection conn = getConnection();
