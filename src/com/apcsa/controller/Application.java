@@ -4,6 +4,7 @@ import java.util.Scanner;
 import com.apcsa.data.PowerSchool;
 import com.apcsa.data.QueryUtils;
 import com.apcsa.model.Administrator;
+import com.apcsa.model.Student;
 import com.apcsa.model.Teacher;
 import com.apcsa.model.User;
 import java.io.BufferedReader;
@@ -29,6 +30,7 @@ public class Application {
     enum StudentAction { COURSEGRADE, ASSIGNMENTGRADE, PASSWORD, LOGOUT }
     enum AdminAction { FACULTY, FACULTY_BY_DEP, STUDENT, STUDENT_GRADE, STUDENT_COURSE, PASSWORD, LOGOUT }
     enum DeptList { CS, ENGLISH, HISTORY, MATH, PHYS_ED, SCIENCE }
+    enum GradeList { FRESHMEN, SOPHMORE, JUNIOR, SENIOR }
     /**
      * Creates an instance of the Application class, which is responsible for interacting
      * with the user via the command line interface.
@@ -146,8 +148,8 @@ public class Application {
                 switch (getAdminMenuSelection()) {
                     case FACULTY: showFaculty(); break;
                     case FACULTY_BY_DEP: showDepartmentUI(); break;
-                    case STUDENT: logout(); break;
-                    case STUDENT_GRADE: shutdown(); break;
+                    case STUDENT: showStudents(); break;
+                    case STUDENT_GRADE: showGradeUI(); break;
                     case STUDENT_COURSE: shutdown(); break;
                     case PASSWORD: changePassword(); break;
                     case LOGOUT: logout(); break;
@@ -155,6 +157,60 @@ public class Application {
                 }
             }
         }
+        
+        private void showStudents() throws ClassNotFoundException, SQLException {
+        	ArrayList<Student> students = PowerSchool.showStudents();
+        	int counter = 1;
+        	for(Student i: students) {
+        		System.out.print("\n" + counter + ". ");
+        		System.out.print(i.getLastName() + ", ");
+        		System.out.print(i.getFirstName() + " / ");
+        		System.out.print(i.getGraduationYear());
+        		counter++;
+        	}  
+        }
+        
+        private GradeList displayGrades() {
+        	System.out.println("\n[1] Freshmen.");
+            System.out.println("[2] Sophmore.");
+            System.out.println("[3] Junior.");
+            System.out.println("[4] Senior.");
+            System.out.print("\n::: ");
+            
+            switch (Utils.getInt(in, -1)) {
+            	case 1: return GradeList.FRESHMEN;
+            	case 2: return GradeList.SOPHMORE;
+            	case 3: return GradeList.JUNIOR;
+            	case 4: return GradeList.SENIOR;
+            default: return null;
+        }
+        }
+        
+        private void showGradeUI() throws ClassNotFoundException, SQLException {
+            
+            switch (displayGrades()) {
+                case FRESHMEN: studentsGrade(1); break;
+                case SOPHMORE: studentsGrade(2); break;
+                case JUNIOR: studentsGrade(3); break;
+                case SENIOR: studentsGrade(4); break;
+                default: System.out.println("\nInvalid selection."); break;
+            }
+        }
+        
+        private void studentsGrade(int gradeLevel) throws ClassNotFoundException, SQLException {
+        	gradeLevel += 8;
+        	ArrayList<Student> students = PowerSchool.showStudents();
+        	int counter = 1;
+        	for(Student i: students) {
+        		if (i.getGradeLevel() == gradeLevel) {
+        			System.out.print("\n" + counter + ". ");
+        			System.out.print(i.getLastName() + ", ");
+        			System.out.print(i.getFirstName() + " / #");
+        			System.out.print(i.getClassRank());
+        			counter++;
+        		}
+        	}  
+		}
         
         private void showDepartmentUI() throws ClassNotFoundException, SQLException {
             
@@ -179,8 +235,8 @@ public class Application {
         	int counter = 1;
         	for(Teacher i: teachers) {
         		System.out.print("\n" + counter + ". ");
-        		System.out.print(i.getFirstName() + ", ");
-        		System.out.print(i.getLastName() + " / ");
+        		System.out.print(i.getLastName() + ", ");
+        		System.out.print(i.getFirstName() + " / ");
         		System.out.print(i.getDeptName());
         		counter++;
         	}  
@@ -192,8 +248,8 @@ public class Application {
         	for(Teacher i: teachers) {
         		if (i.getDepartmentId() == department_id) {
         			System.out.print("\n" + counter + ". ");
-        			System.out.print(i.getFirstName() + ", ");
-        			System.out.print(i.getLastName() + " / ");
+        			System.out.print(i.getLastName() + ", ");
+        			System.out.print(i.getFirstName() + " / ");
         			System.out.print(i.getDeptName());
         			counter++;
         		}

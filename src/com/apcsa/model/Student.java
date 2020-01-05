@@ -27,6 +27,16 @@ public class Student extends User {
 		this.firstName = rs.getString("first_name");
 		this.lastName = rs.getString("last_name");
 	}
+	public Student(ResultSet rs) throws SQLException {
+		super(-1,"student", null, null, null);
+		this.studentId = rs.getInt("student_id");
+		this.classRank = rs.getInt("class_rank");
+		this.gradeLevel = rs.getInt("grade_level");
+		this.graduationYear = rs.getInt("graduation");
+		this.gpa = rs.getDouble("gpa");
+		this.firstName = rs.getString("first_name");
+		this.lastName = rs.getString("last_name");
+	}
 	
 	public int getStudentID() {
 		return studentId;
@@ -42,6 +52,13 @@ public class Student extends User {
 		return classRank;
 	}
 	
+	public int getGraduationYear () {
+		return graduationYear;
+	}
+	
+	public int getGradeLevel () {
+		return gradeLevel;
+	}
 	
 	
 	public double getGpa() {
