@@ -75,10 +75,10 @@ public class QueryUtils {
             "WHERE user_id = ?";
     
     public static String GET_STUDENTS_COURSE = 
-    		"SELECT s.student_id, s.first_name, s.last_name, c.course_no FROM students AS s" +
+    		"SELECT s.student_id, s.first_name, s.last_name, c.course_no, s.gpa FROM students AS s" +
     			"INNER JOIN course_grades g ON g.student_id = s.student_id" + 
     			"INNER JOIN courses c ON c.course_id = g.course_id " +
-    			"GROUP BY c.course_no";
+    			"ORDER BY s.last_name";
     				
     				
     

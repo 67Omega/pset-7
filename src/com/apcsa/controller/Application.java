@@ -217,7 +217,7 @@ public class Application {
         	ArrayList<Student> students = PowerSchool.showStudents();
         	int counter = 1;
         	for(Student i: students) {
-        		if (true) {
+        		if (i.c.course_no = course_no) {
         			System.out.print("\n" + counter + ". ");
         			System.out.print(i.getLastName() + ", ");
         			System.out.print(i.getFirstName() + " / #");
