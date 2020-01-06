@@ -62,7 +62,7 @@ public class Student extends User {
 	
 	
 	public double getGpa() {
-		// TODO Auto-generated method stub
+		
 		return gpa;
 	}
 

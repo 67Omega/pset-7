@@ -108,12 +108,14 @@ public class PowerSchool {
         return teachers;
       }
 
-    public static ArrayList<Student> showStudentsCourse() throws ClassNotFoundException, SQLException {
+    public static ArrayList<Student> showStudentsCourse(String course_no) throws ClassNotFoundException, SQLException {
         ArrayList<Student> students = new ArrayList<>();
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENTS_COURSE)) {
 
-               try (ResultSet rs = stmt.executeQuery()) {
+        	  	stmt.setString(1, course_no);
+               
+        	  	try (ResultSet rs = stmt.executeQuery()) {
                 
                    while (rs.next()) {
                 	  students.add(new Student(rs));
@@ -166,6 +168,26 @@ public class PowerSchool {
 
         return user;
     }
+    
+    
+    public static ArrayList<String> checkCourseNo() {
+    	ArrayList<String> courses = new ArrayList<>();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_COURSE_NO)) {
+        	
+
+            try (ResultSet rs = stmt.executeQuery()) {
+             
+                while (rs.next()) {
+             	  courses.add(rs.getString("course_no"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return courses;
+    }
+    
     public static void resetPassword(String username) {
         //
         // get a connection to the database

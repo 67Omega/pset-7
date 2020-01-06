@@ -150,7 +150,7 @@ public class Application {
                     case FACULTY_BY_DEP: showDepartmentUI(); break;
                     case STUDENT: showStudents(); break;
                     case STUDENT_GRADE: showGradeUI(); break;
-                    case STUDENT_COURSE: shutdown(); break;
+                    case STUDENT_COURSE: studentCourse(); break;
                     case PASSWORD: changePassword(); break;
                     case LOGOUT: logout(); break;
                     default: System.out.println("\nInvalid selection."); break;
@@ -212,19 +212,35 @@ public class Application {
         	}  
 		}
         
-        //todo please Alex finish this with the triple join crap
-        private void studentsCourse(String course_id) throws ClassNotFoundException, SQLException {
-        	ArrayList<Student> students = PowerSchool.showStudents();
+        private void studentCourse() throws ClassNotFoundException, SQLException {
+        	Boolean realCourse = false;
+        	String course_no = "";
+        	ArrayList<String> courses = PowerSchool.checkCourseNo();
+        	do {
+        		System.out.print("\nCourse No.: ");
+        		course_no = in.next();
+        		for (String i: courses) {
+        			if (i.equals(course_no)) {
+        				realCourse = true;
+        			}
+            	}
+        		if (!realCourse) {
+        			System.out.println("\nCourse not found.");
+        		}
+        	} while (!realCourse); 
+        	ArrayList<Student> students = PowerSchool.showStudentsCourse(course_no);
         	int counter = 1;
         	for(Student i: students) {
-        		if (i.c.course_no = course_no) {
         			System.out.print("\n" + counter + ". ");
         			System.out.print(i.getLastName() + ", ");
-        			System.out.print(i.getFirstName() + " / #");
-        			System.out.print(i.getClassRank());
+        			System.out.print(i.getFirstName() + " / ");
+        			if (i.getGpa() == -1) {
+        				System.out.print("--");
+        			} else {
+        				System.out.print(i.getGpa());
+        			}
         			counter++;
-        		}
-        	}  
+        		}  
 		}
         
         private void showDepartmentUI() throws ClassNotFoundException, SQLException {
