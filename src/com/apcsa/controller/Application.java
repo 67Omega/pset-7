@@ -245,32 +245,26 @@ public class Application {
 		}
         
         private void coursesTeacher() throws ClassNotFoundException, SQLException {
+        	boolean validCourse = true;
         	ArrayList<String> courses = PowerSchool.checkCourseByTeacher(activeUser.getUserId()-3);
         	do {
-        		System.out.print("\nCourse No.: ");
-        		course_no = in.next();
-        		for (String i: courses) {
-        			if (i.equals(course_no)) {
-        				realCourse = true;
-        			}
+        		System.out.println("\nChoose a course.");
+        		int counter = 1;
+        		for(String i: courses) {
+        			System.out.print("[" + counter + "] ");
+        			System.out.println(i);
+        			counter++;
             	}
-        		if (!realCourse) {
+    			System.out.print("::: ");
+        		
+    			int courseSelected = in.nextInt();
+    			
+        		if (courseSelected <= 0 || courseSelected > counter) {
+        			validCourse = false;
         			System.out.println("\nCourse not found.");
         		}
-        	} while (!realCourse); 
-        	ArrayList<Student> students = PowerSchool.showStudentsCourse(course_no);
-        	int counter = 1;
-        	for(Student i: students) {
-        			System.out.print("\n" + counter + ". ");
-        			System.out.print(i.getLastName() + ", ");
-        			System.out.print(i.getFirstName() + " / ");
-        			if (i.getGpa() == -1) {
-        				System.out.print("--");
-        			} else {
-        				System.out.print(i.getGpa());
-        			}
-        			counter++;
-        		}  
+        	} while (!validCourse); 
+        	
 		}
         
         private void showDepartmentUI() throws ClassNotFoundException, SQLException {
