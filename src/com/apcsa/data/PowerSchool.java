@@ -188,6 +188,25 @@ public class PowerSchool {
         return courses;
     }
     
+    public static ArrayList<String> checkCourseByTeacher(int teacher_id) {
+    	ArrayList<String> courses = new ArrayList<>();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_COURSE_TEACHER)) {
+        	
+        	stmt.setInt(1, teacher_id);
+        	
+            try (ResultSet rs = stmt.executeQuery()) {
+             
+                while (rs.next()) {
+             	  courses.add(rs.getString("course_no"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return courses;
+    }
+    
     public static void resetPassword(String username) {
         //
         // get a connection to the database
@@ -309,6 +328,7 @@ public class PowerSchool {
             return -1;
         }
     }
+    
     
 
     public static int updatePassword(String password, String username) {

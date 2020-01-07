@@ -31,6 +31,7 @@ public class Application {
     enum AdminAction { FACULTY, FACULTY_BY_DEP, STUDENT, STUDENT_GRADE, STUDENT_COURSE, PASSWORD, LOGOUT }
     enum DeptList { CS, ENGLISH, HISTORY, MATH, PHYS_ED, SCIENCE }
     enum GradeList { FRESHMEN, SOPHMORE, JUNIOR, SENIOR }
+    enum TeacherAction { ENROLLMENT, ADD, DELETE, GRADE, PASSWORD, LOGOUT }
     /**
      * Creates an instance of the Application class, which is responsible for interacting
      * with the user via the command line interface.
@@ -243,6 +244,35 @@ public class Application {
         		}  
 		}
         
+        private void coursesTeacher() throws ClassNotFoundException, SQLException {
+        	ArrayList<String> courses = PowerSchool.checkCourseByTeacher(activeUser.getUserId()-3);
+        	do {
+        		System.out.print("\nCourse No.: ");
+        		course_no = in.next();
+        		for (String i: courses) {
+        			if (i.equals(course_no)) {
+        				realCourse = true;
+        			}
+            	}
+        		if (!realCourse) {
+        			System.out.println("\nCourse not found.");
+        		}
+        	} while (!realCourse); 
+        	ArrayList<Student> students = PowerSchool.showStudentsCourse(course_no);
+        	int counter = 1;
+        	for(Student i: students) {
+        			System.out.print("\n" + counter + ". ");
+        			System.out.print(i.getLastName() + ", ");
+        			System.out.print(i.getFirstName() + " / ");
+        			if (i.getGpa() == -1) {
+        				System.out.print("--");
+        			} else {
+        				System.out.print(i.getGpa());
+        			}
+        			counter++;
+        		}  
+		}
+        
         private void showDepartmentUI() throws ClassNotFoundException, SQLException {
             
                 switch (getDepartmentSelection()) {
@@ -294,6 +324,26 @@ public class Application {
             System.out.println("[2] Factory reset database.");
             System.out.println("[3] Logout.");
             System.out.println("[4] Shutdown.");
+            System.out.print("\n::: ");
+            
+            switch (Utils.getInt(in, -1)) {
+                case 1: return RootAction.PASSWORD;
+                case 2: return RootAction.DATABASE;
+                case 3: return RootAction.LOGOUT;
+                case 4: return RootAction.SHUTDOWN;
+                default: return null;
+            }
+         }
+		
+		private TeacherAction getTeacherMenuSelection() {
+            System.out.println();
+            
+            System.out.println("\n[1] View enrollment by course.");
+            System.out.println("[2] Add assignment.");
+            System.out.println("[3] Delete assignment.");
+            System.out.println("[4] Enter grade.");
+            System.out.println("[5] Change password.");
+            System.out.println("[6] Logout.");
             System.out.print("\n::: ");
             
             switch (Utils.getInt(in, -1)) {
