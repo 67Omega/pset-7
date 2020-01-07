@@ -71,7 +71,7 @@ public class Application {
 
                 if (isFirstLogin() && !activeUser.isRoot()) {
                     // first-time users need to change their passwords from the default provided
-                	System.out.print("Enter new password: ");
+                	System.out.print("\nEnter new password: ");
                 	String newPassword = in.next();
                 	String newPass = activeUser.setPassword(newPassword);
 					PowerSchool.updatePassword (newPass, username);
@@ -417,7 +417,7 @@ public class Application {
             response = in.next();
             if (response.equals("y")) {
             	PowerSchool.resetPassword(usernameForReset);
-            	System.out.print("Successfully reset password for " + usernameForReset + ".");
+            	System.out.print("\nSuccessfully reset password for " + usernameForReset + ".");
             } else if (response.equals("n")) {
             } else {
             	System.out.print("Invalid input.");

@@ -205,7 +205,7 @@ public class PowerSchool {
                 conn.setAutoCommit(false);
                 stmt.setString(1, password);
     			stmt.setString(2, username);
-    			updateLastLogin(conn, username, "0000-00-00 00:00:00");
+    			updateLastLogin(conn, username, "0000-00-00 00:00:00.000");
     			
                 if (stmt.executeUpdate() == 1) {
                     conn.commit();
@@ -291,7 +291,7 @@ public class PowerSchool {
         try (PreparedStatement stmt = conn.prepareStatement(QueryUtils.UPDATE_LAST_LOGIN_SQL)) {
 
             conn.setAutoCommit(false);
-            stmt.setString(1, ts.toString());
+            stmt.setString(1, ts);
             stmt.setString(2, username);
 
             if (stmt.executeUpdate() == 1) {
