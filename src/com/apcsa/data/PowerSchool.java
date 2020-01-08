@@ -169,6 +169,24 @@ public class PowerSchool {
         return user;
     }
     
+    public static String getGrade(int course_id, int student_id) {
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_GRADE)) {
+
+            stmt.setInt(1, course_id);
+            stmt.setInt(2, student_id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("grade");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     
     public static ArrayList<String> checkCourseNo() {
     	ArrayList<String> courses = new ArrayList<>();

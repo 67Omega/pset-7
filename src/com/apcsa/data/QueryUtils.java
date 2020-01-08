@@ -85,8 +85,14 @@ public class QueryUtils {
     		"SELECT course_no FROM courses";
     
     public static String GET_COURSE_TEACHER =
-    		"SELECT * FROM courses AS c" +
-    				"INNER JOIN teachers t" +
-    				"ON t.teacher_id = c.teacher_id" +
+    		"SELECT * FROM courses AS c " +
+    				"INNER JOIN teachers t " +
+    				"ON t.teacher_id = c.teacher_id " +
     				"WHERE t.teacher_id = ?";
+    
+    public static String GET_STUDENT_GRADE = 
+    		"SELECT c.grade FROM course_grades c " +
+    				"INNER JOIN students s " +
+    				"ON s.student_id = c.student_id " +
+    				"WHERE (c.course_id = ? AND s.student_id = ?)";
 }

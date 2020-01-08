@@ -132,13 +132,14 @@ public class Application {
             }
         }
         
-        private void showTeacherUI() {
+        private void showTeacherUI() throws ClassNotFoundException, SQLException {
             while (activeUser != null) {
-                switch (getRootMenuSelection()) {
-                    case PASSWORD: resetPassword(); break;
-                    case DATABASE: factoryReset(); break;
+                switch (getTeacherMenuSelection()) {
+                    case ENROLLMENT: coursesTeacher(); break;
+                    case ADD: factoryReset(); break;
+                    case DELETE: logout(); break;
+                    case GRADE: logout(); break;
                     case LOGOUT: logout(); break;
-                    case SHUTDOWN: shutdown(); break;
                     default: System.out.println("\nInvalid selection."); break;
                 }
             }
@@ -246,25 +247,41 @@ public class Application {
         
         private void coursesTeacher() throws ClassNotFoundException, SQLException {
         	boolean validCourse = true;
+        	int courseSelected;
         	ArrayList<String> courses = PowerSchool.checkCourseByTeacher(activeUser.getUserId()-3);
+
         	do {
-        		System.out.println("\nChoose a course.");
+        		System.out.println("\nChoose a course.\n");
         		int counter = 1;
         		for(String i: courses) {
         			System.out.print("[" + counter + "] ");
         			System.out.println(i);
         			counter++;
             	}
-    			System.out.print("::: ");
+    			System.out.print("\n::: ");
         		
-    			int courseSelected = in.nextInt();
+    			courseSelected = in.nextInt();
     			
         		if (courseSelected <= 0 || courseSelected > counter) {
         			validCourse = false;
         			System.out.println("\nCourse not found.");
         		}
         	} while (!validCourse); 
-        	
+        	System.out.println(courses);
+        	ArrayList<Student> students = PowerSchool.showStudentsCourse(courses.get(courseSelected - 1));
+        	System.out.println(courses.get(courseSelected - 1));
+        	int counter = 1;
+        	for(Student i: students) {
+        			System.out.print("\n" + counter + ". ");
+        			System.out.print(i.getLastName() + ", ");
+        			System.out.print(i.getFirstName() + " / ");
+        			if (PowerSchool.getGrade(courseSelected, i.getStudentId()) == null) {
+        				System.out.print("--");
+        			} else {
+        				System.out.print(PowerSchool.getGrade(courseSelected, i.getStudentId()));
+        			}
+        			counter++;
+        		} 
 		}
         
         private void showDepartmentUI() throws ClassNotFoundException, SQLException {
@@ -341,10 +358,12 @@ public class Application {
             System.out.print("\n::: ");
             
             switch (Utils.getInt(in, -1)) {
-                case 1: return RootAction.PASSWORD;
-                case 2: return RootAction.DATABASE;
-                case 3: return RootAction.LOGOUT;
-                case 4: return RootAction.SHUTDOWN;
+                case 1: return TeacherAction.ENROLLMENT;
+                case 2: return TeacherAction.ADD;
+                case 3: return TeacherAction.DELETE;
+                case 4: return TeacherAction.GRADE;
+                case 5: return TeacherAction.PASSWORD;
+                case 6: return TeacherAction.GRADE;
                 default: return null;
             }
          }
