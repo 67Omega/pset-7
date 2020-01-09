@@ -177,6 +177,30 @@ public class PowerSchool {
     	            return -1;
     	        }
     	    }
+    public static int delAssignment(int course_id, int assignment_id, int marking_period, int is_midterm, int is_final) throws ClassNotFoundException, SQLException{
+  	  try (Connection conn = getConnection();
+  	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.DEL_ASSIGNMENT)) {
+  	            conn.setAutoCommit(false);
+  	            stmt.setInt(1, course_id);
+  	            stmt.setInt(2, assignment_id);
+  				stmt.setInt(3, marking_period);
+  				stmt.setInt(4, is_midterm);
+  				stmt.setInt(5, is_final);
+  	            if (stmt.executeUpdate() == 1) {
+  	                conn.commit();
+
+  	                return 1;
+  	            } else {
+  	                conn.rollback();
+
+  	                return -1;
+  	            }
+  	        } catch (SQLException e) {
+  	            e.printStackTrace();
+
+  	            return -1;
+  	        }
+  	    }
     public static User getAdministrator(User user) {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_ADMIN_SQL)) {
