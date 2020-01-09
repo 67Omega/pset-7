@@ -325,20 +325,22 @@ public class Application {
         	
         	if (Utils.confirm(in, "\nAre you sure you want to create this assignment? (y/n) ")) {
                 if (in != null) {
-                	PowerSchool.addAssignment(course_id, assignmentIdCounter++, marking_period, is_midterm, is_final, title, point_value);
+                	assignmentIdCounter++;
+                	PowerSchool.addAssignment(course_id, assignmentIdCounter, marking_period, is_midterm, is_final, title, point_value);
                 	System.out.print("\nSuccessfully created assignment.");
                 }
         	}        	
         }
         
         private void deleteAssignment() throws ClassNotFoundException, SQLException {
-        	int point_value = 1;
+        	///int point_value = 1;
         	int is_final = 0;
         	int is_midterm = 0;
-        	int assignmentId;
+        	//int assignmentId;
+        	String assignment_idString = "";
         	int marking_period;
         	boolean validAssignment = false;
-        	String title = "";
+        	//String title = "";
         	Boolean validCourse = true;
         	Boolean realTerm;
         	ArrayList<String> courses = PowerSchool.checkCourseByTeacher(activeUser.getUserId()-3);
@@ -401,12 +403,13 @@ public class Application {
         		}
         		System.out.print("\n::: ");
         		int assignmentToDelete = in.nextInt();
-        		assignmentId = assignmentToDelete * 3;
+        		assignment_idString = assignments.get((assignmentToDelete * 3) - 1);
         		validAssignment = (assignmentToDelete <= counter && assignmentToDelete > 0);
         	} while (!validAssignment);
         	if (Utils.confirm(in, "\nAre you sure you want to delete this assignment? (y/n) ")) {
                 if (in != null) {
-                	PowerSchool.delAssignment(assignmentId);
+                	System.out.print(assignment_idString);
+                	PowerSchool.delAssignment(Integer.parseInt(assignment_idString));
                 	System.out.print("\nSuccessfully deleted assignment.");
                 }
         	}        	
