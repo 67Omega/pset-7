@@ -396,14 +396,13 @@ public class Application {
         		ArrayList<String> assignments = PowerSchool.checkAssignmentByTeacher(course_id, marking_period, is_midterm, is_final);
         		int counter = 1;
         		for (int i = 0; i < assignments.size(); i += 3) {
-        			System.out.println("[" + counter + "] ");
-        			System.out.println(i);
-        			System.out.println(i + 1);
+        			System.out.println("[" + counter + "]" + " " + assignments.get(i) + " (" + assignments.get(i + 1) + " pts)");
         			counter++;
         		}
         		System.out.print("\n::: ");
         		int assignmentToDelete = in.nextInt();
         		assignmentId = assignmentToDelete * 3;
+        		validAssignment = (assignmentToDelete <= counter && assignmentToDelete > 0);
         	} while (!validAssignment);
         	if (Utils.confirm(in, "\nAre you sure you want to delete this assignment? (y/n) ")) {
                 if (in != null) {

@@ -105,10 +105,10 @@ public class QueryUtils {
     				"VALUES (?, ?, ?, ?, ?, ?, ?)";
     				
     public static String SHOW_ASSIGNMENTS = 
-    	"SELECT title, points, assignment_id " +
+    	"SELECT title, point_value, assignment_id FROM assignments " +
     			"WHERE course_id = ? AND marking_period = ? AND is_midterm = ? AND is_final = ?";
     
     public static String DEL_ASSIGNMENT = 
-    		"DELETE assignments " +
-    				"VALUES assignment_id = ?";
+    		"DELETE FROM assignments " +
+    				"WHERE assignment_id = ?";
 }
