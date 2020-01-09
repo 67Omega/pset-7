@@ -303,7 +303,8 @@ public class PowerSchool {
             try (ResultSet rs = stmt.executeQuery()) {
              
                 while (rs.next()) {
-             	  assignments.add(rs.getString("assignment_id"));
+             	 assignments.add(rs.getString("title"));
+             	 assignments.add(rs.getString("point_value"));
                 }
             }
         } catch (SQLException e) {
