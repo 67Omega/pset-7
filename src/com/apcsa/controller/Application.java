@@ -138,7 +138,7 @@ public class Application {
                 switch (getTeacherMenuSelection()) {
                     case ENROLLMENT: coursesTeacher(); break;
                     case ADD: addAssignment(); break;
-                    case DELETE: logout(); break;
+                    case DELETE: deleteAssignment(); break;
                     case GRADE: logout(); break;
                     case LOGOUT: logout(); break;
                     default: System.out.println("\nInvalid selection."); break;
@@ -296,10 +296,10 @@ public class Application {
             		case 3: break;
             		case 4: break;
             		case 5: marking_period = -1;
-            		is_midterm = 0;
+            		is_midterm = 1;
             		break;
             		case 6: marking_period = -1;
-            		is_final = 0;
+            		is_final = 1;
             		break;
             		default: realTerm = false;
             		break;
@@ -327,6 +327,88 @@ public class Application {
                 if (in != null) {
                 	PowerSchool.addAssignment(course_id, assignmentIdCounter++, marking_period, is_midterm, is_final, title, point_value);
                 	System.out.print("\nSuccessfully created assignment.");
+                }
+        	}        	
+        }
+        
+        private void deleteAssignment() throws ClassNotFoundException, SQLException {
+        	int point_value = 1;
+        	int is_final = 0;
+        	int is_midterm = 0;
+        	int assignmentId;
+        	int marking_period;
+        	boolean validAssignment = false;
+        	String title = "";
+        	Boolean validCourse = true;
+        	Boolean realTerm;
+        	ArrayList<String> courses = PowerSchool.checkCourseByTeacher(activeUser.getUserId()-3);
+
+        	int course_select;
+			do {
+        		System.out.println("\nChoose a course.\n");
+        		int counter = 1;
+        		for(String i: courses) {
+        			System.out.print("[" + counter + "] ");
+        			System.out.println(i);
+        			counter++;
+            	}
+    			System.out.print("\n::: ");
+        		
+    			course_select = in.nextInt();
+    			
+        		if (course_select <= 0 || course_select > counter) {
+        			validCourse = false;
+        			System.out.println("\nCourse not found.");
+        		}
+        	} while (!validCourse); 
+			
+			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select));
+
+        	do {
+        		realTerm = true;
+        		System.out.println("\n[1] MP1 assignment.");
+            	System.out.println("[2] MP2 assignment.");
+            	System.out.println("[3] MP3 assignment.");
+            	System.out.println("[4] MP4 assignment.");
+            	System.out.println("[5] Midterm exam.");
+            	System.out.println("[6] Final exam.");
+            	System.out.print("\n::: ");
+            	
+            	marking_period = in.nextInt();
+            	
+            	switch (marking_period){
+            		case 1: break;
+            		case 2: break;
+            		case 3: break;
+            		case 4: break;
+            		case 5: marking_period = -1;
+            		is_midterm = 1;
+            		break;
+            		case 6: marking_period = -1;
+            		is_final = 1;
+            		break;
+            		default: realTerm = false;
+            		break;
+            	}
+        	} while (!realTerm);
+        	do {
+        		System.out.println("\nChoose an assignment. ");
+        		ArrayList<String> assignments = PowerSchool.checkAssignmentByTeacher(course_id, marking_period, is_midterm, is_final);
+        		int counter = 1;
+        		for (int i = 0; i < assignments.size(); i += 3) {
+        			System.out.println("[" + counter + "] ");
+        			System.out.println(i);
+        			System.out.println(i + 1);
+        			counter++;
+        		}
+        		System.out.print("\n::: ");
+        		int assignmentToDelete = in.nextInt();
+        		assignmentId = assignmentToDelete * 3;
+        	} while (!validAssignment);
+        	if (Utils.confirm(in, "\nAre you sure you want to delete this assignment? (y/n) ")) {
+                if (in != null) {
+                	PowerSchool.delAssignment(assignmentId);
+                	System.out.print("\nSuccessfully deleted assignment.");
                 }
         	}        	
         }

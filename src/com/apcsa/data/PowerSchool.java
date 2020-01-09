@@ -305,6 +305,7 @@ public class PowerSchool {
                 while (rs.next()) {
              	 assignments.add(rs.getString("title"));
              	 assignments.add(rs.getString("point_value"));
+             	 assignments.add(rs.getString("assignment_id"));
                 }
             }
         } catch (SQLException e) {
