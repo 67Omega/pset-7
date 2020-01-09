@@ -177,15 +177,12 @@ public class PowerSchool {
     	            return -1;
     	        }
     	    }
-    public static int delAssignment(int course_id, int assignment_id, int marking_period, int is_midterm, int is_final) throws ClassNotFoundException, SQLException{
+    public static int delAssignment(int assignment_id) throws ClassNotFoundException, SQLException{
   	  try (Connection conn = getConnection();
   	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.DEL_ASSIGNMENT)) {
   	            conn.setAutoCommit(false);
-  	            stmt.setInt(1, course_id);
-  	            stmt.setInt(2, assignment_id);
-  				stmt.setInt(3, marking_period);
-  				stmt.setInt(4, is_midterm);
-  				stmt.setInt(5, is_final);
+  	            stmt.setInt(1, assignment_id);
+ 
   	            if (stmt.executeUpdate() == 1) {
   	                conn.commit();
 
@@ -291,6 +288,28 @@ public class PowerSchool {
             e.printStackTrace();
         }
         return courses;
+    }
+    
+    public static ArrayList<String> checkAssignmentByTeacher(int course_id, int marking_period, int is_midterm, int is_final) {
+    	ArrayList<String> assignments = new ArrayList<>();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(QueryUtils.SHOW_ASSIGNMENTS)) {
+        	
+        	conn.setAutoCommit(false);
+            stmt.setInt(1, course_id);
+			stmt.setInt(2, marking_period);
+			stmt.setInt(3, is_midterm);
+			stmt.setInt(4, is_final);
+            try (ResultSet rs = stmt.executeQuery()) {
+             
+                while (rs.next()) {
+             	  assignments.add(rs.getString("assignment_id"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return assignments;
     }
     
     public static void resetPassword(String username) {
