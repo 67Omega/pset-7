@@ -84,6 +84,10 @@ public class QueryUtils {
     public static String GET_COURSE_NO =
     		"SELECT course_no FROM courses";
     
+    public static String GET_COURSE_ID =
+    		"SELECT course_id FROM courses " +
+    				"WHERE course_no = ?";
+    
     public static String GET_COURSE_TEACHER =
     		"SELECT * FROM courses AS c " +
     				"INNER JOIN teachers t " +
@@ -95,4 +99,8 @@ public class QueryUtils {
     				"INNER JOIN students s " +
     				"ON s.student_id = c.student_id " +
     				"WHERE (c.course_id = ? AND s.student_id = ?)";
+    
+    public static String ADD_ASSIGNMENT = 
+    		"INSERT INTO assignments " +
+    				"VALUES (?, ?, ?, ?, ?, ?, ?)";
 }

@@ -148,9 +148,35 @@ public class PowerSchool {
      * Returns the administrator account associated with the user.
      *
      * @param user the user
+     * @return 
      * @return the administrator account if it exists
      */
+    public static int addAssignment(int course_id, int assignment_id, int marking_period, int is_midterm, int is_final, String title, int point_value) throws ClassNotFoundException, SQLException{
+    	  try (Connection conn = getConnection();
+    	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.ADD_ASSIGNMENT)) {
+    	            conn.setAutoCommit(false);
+    	            stmt.setInt(1, course_id);
+    	            stmt.setInt(2, assignment_id);
+    				stmt.setInt(3, marking_period);
+    				stmt.setInt(4, is_midterm);
+    				stmt.setInt(5, is_final);
+    				stmt.setString(6, title);
+    				stmt.setInt(7, point_value);
+    	            if (stmt.executeUpdate() == 1) {
+    	                conn.commit();
 
+    	                return 1;
+    	            } else {
+    	                conn.rollback();
+
+    	                return -1;
+    	            }
+    	        } catch (SQLException e) {
+    	            e.printStackTrace();
+
+    	            return -1;
+    	        }
+    	    }
     public static User getAdministrator(User user) {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_ADMIN_SQL)) {
@@ -206,6 +232,24 @@ public class PowerSchool {
         return courses;
     }
     
+
+	public static int checkCourseId(String course_no) {
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_COURSE_ID)) {
+        	
+        	stmt.setString(1, course_no);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+             
+                while (rs.next()) {
+             	  return rs.getInt("course_id");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+		return 0;
+    }
     public static ArrayList<String> checkCourseByTeacher(int teacher_id) {
     	ArrayList<String> courses = new ArrayList<>();
         try (Connection conn = getConnection();

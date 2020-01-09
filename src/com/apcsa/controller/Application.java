@@ -26,6 +26,7 @@ import com.apcsa.controller.Utils;
 public class Application {
     private Scanner in;
     private User activeUser;
+    public static int assignmentIdCounter = 1;
     enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
     enum StudentAction { COURSEGRADE, ASSIGNMENTGRADE, PASSWORD, LOGOUT }
     enum AdminAction { FACULTY, FACULTY_BY_DEP, STUDENT, STUDENT_GRADE, STUDENT_COURSE, PASSWORD, LOGOUT }
@@ -136,7 +137,7 @@ public class Application {
             while (activeUser != null) {
                 switch (getTeacherMenuSelection()) {
                     case ENROLLMENT: coursesTeacher(); break;
-                    case ADD: factoryReset(); break;
+                    case ADD: addAssignment(); break;
                     case DELETE: logout(); break;
                     case GRADE: logout(); break;
                     case LOGOUT: logout(); break;
@@ -244,6 +245,91 @@ public class Application {
         			counter++;
         		}  
 		}
+
+        private void addAssignment() throws ClassNotFoundException, SQLException {
+        	int point_value = 1;
+        	int is_final = 0;
+        	int is_midterm = 0;
+        	int marking_period;
+        	String title = "";
+        	Boolean validCourse = true;
+        	Boolean realTerm;
+        	Boolean rerunValue = false;
+        	ArrayList<String> courses = PowerSchool.checkCourseByTeacher(activeUser.getUserId()-3);
+
+        	int course_select;
+			do {
+        		System.out.println("\nChoose a course.\n");
+        		int counter = 1;
+        		for(String i: courses) {
+        			System.out.print("[" + counter + "] ");
+        			System.out.println(i);
+        			counter++;
+            	}
+    			System.out.print("\n::: ");
+        		
+    			course_select = in.nextInt();
+    			
+        		if (course_select <= 0 || course_select > counter) {
+        			validCourse = false;
+        			System.out.println("\nCourse not found.");
+        		}
+        	} while (!validCourse); 
+			
+			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select));
+
+        	do {
+        		realTerm = true;
+        		System.out.println("\n[1] MP1 assignment.");
+            	System.out.println("[2] MP2 assignment.");
+            	System.out.println("[3] MP3 assignment.");
+            	System.out.println("[4] MP4 assignment.");
+            	System.out.println("[5] Midterm exam.");
+            	System.out.println("[6] Final exam.");
+            	System.out.print("\n::: ");
+            	
+            	marking_period = in.nextInt();
+            	
+            	switch (marking_period){
+            		case 1: break;
+            		case 2: break;
+            		case 3: break;
+            		case 4: break;
+            		case 5: marking_period = -1;
+            		is_midterm = 0;
+            		break;
+            		case 6: marking_period = -1;
+            		is_final = 0;
+            		break;
+            		default: realTerm = false;
+            		break;
+            	}
+        	} while (!realTerm);
+        	
+        	System.out.print("\nAssignment Title: ");
+        	
+        	do {
+        		title = in.nextLine();
+        	
+        	} while (title.equals(""));
+        	do {
+        		
+        	if (rerunValue) {
+        		System.out.println("Point values must be between 1 and 100.\n");
+        	}
+        	
+        		System.out.print("Point Value: ");
+        		point_value = in.nextInt();
+        		rerunValue = true;
+        	} while (point_value < 1 || point_value > 100);
+        	
+        	if (Utils.confirm(in, "\nAre you sure you want to create this assignment? (y/n) ")) {
+                if (in != null) {
+                	PowerSchool.addAssignment(course_id, assignmentIdCounter++, marking_period, is_midterm, is_final, title, point_value);
+                	System.out.print("\nSuccessfully created assignment.");
+                }
+        	}        	
+        }
         
         private void coursesTeacher() throws ClassNotFoundException, SQLException {
         	boolean validCourse = true;
@@ -267,9 +353,7 @@ public class Application {
         			System.out.println("\nCourse not found.");
         		}
         	} while (!validCourse); 
-        	System.out.println(courses);
         	ArrayList<Student> students = PowerSchool.showStudentsCourse(courses.get(courseSelected - 1));
-        	System.out.println(courses.get(courseSelected - 1));
         	int counter = 1;
         	for(Student i: students) {
         			System.out.print("\n" + counter + ". ");
