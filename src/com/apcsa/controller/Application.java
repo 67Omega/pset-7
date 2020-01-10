@@ -26,7 +26,7 @@ import com.apcsa.controller.Utils;
 public class Application {
     private Scanner in;
     private User activeUser;
-    public static int assignmentIdCounter = 1;
+    public static int assignmentIdCounter = 0;
     enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
     enum StudentAction { COURSEGRADE, ASSIGNMENTGRADE, PASSWORD, LOGOUT }
     enum AdminAction { FACULTY, FACULTY_BY_DEP, STUDENT, STUDENT_GRADE, STUDENT_COURSE, PASSWORD, LOGOUT }
@@ -165,7 +165,7 @@ public class Application {
         	ArrayList<Student> students = PowerSchool.showStudents();
         	int counter = 1;
         	for(Student i: students) {
-        		System.out.print("\n" + counter + ". ");
+        		System.out.print("\n" + counter + ".s ");
         		System.out.print(i.getLastName() + ", ");
         		System.out.print(i.getFirstName() + " / ");
         		System.out.print(i.getGraduationYear());
@@ -276,7 +276,7 @@ public class Application {
         		}
         	} while (!validCourse); 
 			
-			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select));
+			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select - 1));
 
         	do {
         		realTerm = true;
@@ -333,14 +333,13 @@ public class Application {
         }
         
         private void deleteAssignment() throws ClassNotFoundException, SQLException {
-        	///int point_value = 1;
+        	ArrayList<String> assignments;
         	int is_final = 0;
+        	int assignmentToDelete;
         	int is_midterm = 0;
-        	//int assignmentId;
         	String assignment_idString = "";
         	int marking_period;
         	boolean validAssignment = false;
-        	//String title = "";
         	Boolean validCourse = true;
         	Boolean realTerm;
         	ArrayList<String> courses = PowerSchool.checkCourseByTeacher(activeUser.getUserId()-3);
@@ -395,22 +394,21 @@ public class Application {
         	} while (!realTerm);
         	do {
         		System.out.println("\nChoose an assignment. ");
-        		ArrayList<String> assignments = PowerSchool.checkAssignmentByTeacher(course_id, marking_period, is_midterm, is_final);
+        		assignments = PowerSchool.checkAssignmentByTeacher(course_id, marking_period, is_midterm, is_final);
         		int counter = 1;
         		for (int i = 0; i < assignments.size(); i += 3) {
         			System.out.println("[" + counter + "]" + " " + assignments.get(i) + " (" + assignments.get(i + 1) + " pts)");
         			counter++;
         		}
         		System.out.print("\n::: ");
-        		int assignmentToDelete = in.nextInt();
-        		assignment_idString = assignments.get((assignmentToDelete * 3) - 1);
+        		assignmentToDelete = in.nextInt();
+        		assignment_idString = assignments.get(assignmentToDelete * 3 - 1);
         		validAssignment = (assignmentToDelete <= counter && assignmentToDelete > 0);
         	} while (!validAssignment);
         	if (Utils.confirm(in, "\nAre you sure you want to delete this assignment? (y/n) ")) {
                 if (in != null) {
-                	System.out.print(assignment_idString);
                 	PowerSchool.delAssignment(Integer.parseInt(assignment_idString));
-                	System.out.print("\nSuccessfully deleted assignment.");
+                	System.out.print("\nSuccessfully deleted " + assignments.get(assignmentToDelete - 3) + ".");
                 }
         	}        	
         }
