@@ -84,6 +84,10 @@ public class QueryUtils {
     public static String GET_COURSE_NO =
     		"SELECT course_no FROM courses";
     
+    public static String CHECK_COURSE_NO =
+    		"SELECT course_no FROM courses " +
+    				"WHERE course_id = ?"; 
+    
     public static String GET_COURSE_ID =
     		"SELECT course_id FROM courses " +
     				"WHERE course_no = ?";
@@ -111,4 +115,22 @@ public class QueryUtils {
     public static String DEL_ASSIGNMENT = 
     		"DELETE FROM assignments " +
     				"WHERE assignment_id = ?";
+    
+    public static String ADD_GRADE = 
+    		"INSERT INTO assignment_grades(points_earned) " +
+    	    		"VALUES (?)";
+    public static final String ADD_STUDENT_TO_ASSIGNMENT = 
+    		"INSERT INTO assignment_grades(course_id, assignment_id, student_id, points_possible) " +
+    	    		"VALUES (?, ?, ?, ?)";
+    
+    public static String STUDENT_ASSIGNMENT =
+    		"SELECT * FROM students s " +
+    				"INNER JOIN assignment_grades a " +
+    				"ON s.student_id  = a.student_id " +
+    				"WHERE a.assignment_id = ?";
+    public static String SHOW_GRADE =
+    "SELECT a.points_earned FROM assignment_grades a " +
+    		"INNER JOIN students s " +
+    		"ON s.student_id = a.student_id " +
+    		"WHERE (a.assignment_id = ? AND s.student_id = ?)";
 }

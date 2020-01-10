@@ -108,6 +108,24 @@ public class PowerSchool {
         return teachers;
       }
 
+    public static ArrayList<Student> showStudentsAssignment(String assignment_id) throws ClassNotFoundException, SQLException {
+        ArrayList<Student> students = new ArrayList<>();
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(QueryUtils.STUDENT_ASSIGNMENT)) {
+
+        	  	stmt.setString(1, assignment_id);
+               
+        	  	try (ResultSet rs = stmt.executeQuery()) {
+                
+                   while (rs.next()) {
+                	  students.add(new Student(rs));
+                   }
+               }
+           } catch (SQLException e) {
+               e.printStackTrace();
+           }
+        return students;
+      }
     public static ArrayList<Student> showStudentsCourse(String course_no) throws ClassNotFoundException, SQLException {
         ArrayList<Student> students = new ArrayList<>();
         try (Connection conn = getConnection();
@@ -177,6 +195,51 @@ public class PowerSchool {
     	            return -1;
     	        }
     	    }
+    public static int addStudentToAssignment(int course_id, int assignment_id, int student_id, int point_value) throws ClassNotFoundException, SQLException{
+  	  try (Connection conn = getConnection();
+  	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.ADD_STUDENT_TO_ASSIGNMENT)) {
+  	            conn.setAutoCommit(false);
+  	            stmt.setInt(1, course_id);
+  	            stmt.setInt(2, assignment_id);
+  				stmt.setInt(3, student_id);
+  				stmt.setInt(4, point_value);
+  				if (stmt.executeUpdate() == 1) {
+  	                conn.commit();
+
+  	                return 1;
+  	            } else {
+  	                conn.rollback();
+
+  	                return -1;
+  	            }
+  	        } catch (SQLException e) {
+  	            e.printStackTrace();
+
+  	            return -1;
+  	        }
+  	    }
+  
+    
+    public static int gradeAssignment(int points_earned) throws ClassNotFoundException, SQLException{
+  	  try (Connection conn = getConnection();
+  	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.ADD_GRADE)) {
+  	            conn.setAutoCommit(false);
+  	            stmt.setInt(1, points_earned);
+  	            if (stmt.executeUpdate() == 1) {
+  	                conn.commit();
+
+  	                return 1;
+  	            } else {
+  	                conn.rollback();
+
+  	                return -1;
+  	            }
+  	        } catch (SQLException e) {
+  	            e.printStackTrace();
+
+  	            return -1;
+  	        }
+  	    }
     public static void delAssignment(int assignment_id) throws ClassNotFoundException, SQLException{
   	  try (Connection conn = getConnection();
   	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.DEL_ASSIGNMENT)) {
@@ -227,6 +290,25 @@ public class PowerSchool {
     }
     
     
+    
+    public static String getAssignmentGrade(int assignment_id, int student_id) {
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(QueryUtils.SHOW_GRADE)) {
+
+            stmt.setInt(1, assignment_id);
+            stmt.setInt(2, student_id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("grade");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     public static ArrayList<String> checkCourseNo() {
     	ArrayList<String> courses = new ArrayList<>();
         try (Connection conn = getConnection();
@@ -256,6 +338,23 @@ public class PowerSchool {
              
                 while (rs.next()) {
              	  return rs.getInt("course_id");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+		return 0;
+    }
+	public static int checkCourseNo(String course_id) {
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(QueryUtils.CHECK_COURSE_NO)) {
+        	
+        	stmt.setString(1, course_id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+             
+                while (rs.next()) {
+             	  return rs.getInt("course_no");
                 }
             }
         } catch (SQLException e) {
