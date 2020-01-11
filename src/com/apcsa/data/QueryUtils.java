@@ -119,12 +119,12 @@ public class QueryUtils {
     
     public static String DEL_ASSIGNMENT = 
     		"DELETE FROM assignments " +
-    				"WHERE assignment_id = ? AND course_id = ? AND title = ?";
+    				"WHERE assignment_id = ? AND course_id = ?";
     
     public static String ADD_GRADE = 
     		"UPDATE assignment_grades " +
-    	    		"SET points_earned = ? AND is_graded = 1 " +
-    	    		"WHERE student_id = ? AND assignment_id = ?";
+    	    		"SET points_earned = ?, is_graded = 1 " +
+    	    		"WHERE student_id = ? AND assignment_id = ? AND course_id = ?";
     public static String GET_LAST_ID = 
     		"SELECT assignment_id FROM assignments " + 	
     				"WHERE assignment_id = ( SELECT max(assignment_id) FROM assignments) AND course_id = ?";

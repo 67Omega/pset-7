@@ -408,9 +408,9 @@ public class Application {
         		System.out.print("Student: " + students.get(studentSelected - 1).getLastName() + ", " + students.get(studentSelected - 1).getFirstName() + "\n");
         		System.out.print("Current Grade: ");
         		if (PowerSchool.getAssignmentGrade(Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), (studentSelected - 1)) == null) {
-    				System.out.print("--");
+    				System.out.print("--\n");
     			} else {
-    				System.out.print(PowerSchool.getAssignmentGrade(Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), studentSelected - 1));
+    				System.out.print(PowerSchool.getAssignmentGrade(Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), studentSelected - 1) + "\n");
     			}
         		
         		System.out.print("\nNew Grade: ");
@@ -418,7 +418,7 @@ public class Application {
         	
         	if (Utils.confirm(in, "\nAre you sure you want to enter this grade? (y/n) ")) {
                 if (in != null) {
-                	PowerSchool.gradeAssignment(points_earned, students.get(studentSelected - 1).getStudentId(), Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)));
+                	PowerSchool.gradeAssignment(points_earned, students.get(studentSelected - 1).getStudentId(), Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), course_id);
                 	System.out.print("\nSuccessfully entered.");
                 }
         	}        	
@@ -592,8 +592,8 @@ public class Application {
         	} while (!validAssignment);
         	if (Utils.confirm(in, "\nAre you sure you want to delete this assignment? (y/n) ")) {
                 if (in != null) {
-                	PowerSchool.delAssignment(Integer.parseInt(assignment_idString), course_id, assignments.get(assignmentToDelete * 3 - 1));
-                	PowerSchool.delAssignmentGrade(Integer.parseInt(assignment_idString), course_id, assignments.get(assignmentToDelete * 3 - 1));
+                	PowerSchool.delAssignment(Integer.parseInt(assignment_idString), course_id);
+                	PowerSchool.delAssignmentGrade(Integer.parseInt(assignment_idString), course_id);
                 	
                 	System.out.print("\nSuccessfully deleted " + assignments.get(assignmentToDelete * 3 - 3) + ".");
                 }

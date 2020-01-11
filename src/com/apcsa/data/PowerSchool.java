@@ -260,13 +260,15 @@ public class PowerSchool {
   	    }
   
     
-    public static int gradeAssignment(int points_earned, int student_id, int assignment_id) throws ClassNotFoundException, SQLException{
+    public static int gradeAssignment(int points_earned, int student_id, int assignment_id, int course_id) throws ClassNotFoundException, SQLException{
   	  try (Connection conn = getConnection();
   	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.ADD_GRADE)) {
   	            conn.setAutoCommit(false);
+
   	            stmt.setInt(1, points_earned);
   	            stmt.setInt(2, student_id);
   	            stmt.setInt(3, assignment_id);
+  	            stmt.setInt(4, course_id);
   	            if (stmt.executeUpdate() == 1) {
   	                conn.commit();
 
@@ -282,13 +284,12 @@ public class PowerSchool {
   	            return -1;
   	        }
   	    }
-    public static void delAssignment(int assignment_id, int course_id, String title) throws ClassNotFoundException, SQLException{
+    public static void delAssignment(int assignment_id, int course_id) throws ClassNotFoundException, SQLException{
   	  try (Connection conn = getConnection();
   	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.DEL_ASSIGNMENT)) {
   	            
   	            stmt.setInt(1, assignment_id);
   	            stmt.setInt(2, course_id);
-  	            stmt.setString(3, title);
   	            stmt.execute();
   	  			} catch (SQLException e) {
   	  				System.out.println(e.getMessage());
@@ -370,7 +371,8 @@ public class PowerSchool {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_LAST_ID)) {
         	
-
+        	stmt.setInt(1, course_id);
+        	
             try (ResultSet rs = stmt.executeQuery()) {
              
                 if (rs.next()) {
@@ -477,7 +479,7 @@ public class PowerSchool {
     	ArrayList<String> assignments = new ArrayList<>();
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(QueryUtils.SHOW_ASSIGNMENTS)) {
-        	System.out.print(course_id + " " + marking_period + " " + is_midterm + " " + is_final);
+
         	conn.setAutoCommit(false);
             stmt.setInt(1, course_id);
 			stmt.setInt(2, marking_period);
@@ -681,13 +683,13 @@ public class PowerSchool {
         }
     }
 
-	public static void delAssignmentGrade(int assignment_id, int course_id, String title) {
+	public static void delAssignmentGrade(int assignment_id, int course_id) {
 		try (Connection conn = getConnection();
   	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.DEL_ASSIGNMENT_GRADE)) {
   	            
-  	            stmt.setInt(1, assignment_id);
-  	          stmt.setInt(1, course_id);
-  
+  	           stmt.setInt(1, assignment_id);
+  	          stmt.setInt(2, course_id);
+  	          
   	            stmt.execute();
   	  			} catch (SQLException e) {
   	  				System.out.println(e.getMessage());
