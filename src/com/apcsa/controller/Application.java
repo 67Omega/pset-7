@@ -127,7 +127,7 @@ public class Application {
             while (activeUser != null) {
                 switch (getStudentMenuSelection()) {
                    	case COURSEGRADE: viewCourseGrades(); break;
-                    //case ASSIGNMENTGRADE: viewAssignmentGrades(); break;
+                    case ASSIGNMENTGRADE: viewAssignmentGrades(); break;
                     case PASSWORD: changePassword(); break;
                     case LOGOUT: logout(); break;
                     default: System.out.println("\nInvalid selection."); break;
@@ -201,6 +201,70 @@ public class Application {
 				String grade = (courseAndGrade.get(i + 1) == null) ? "--" : (courseAndGrade.get(i + 1));
     			System.out.print(i + 1 + ". " + courseAndGrade.get(i) + " / " + grade + "\n");
     		}
+        }
+        
+        private void viewAssignmentGrades() throws ClassNotFoundException, SQLException {
+        	ArrayList<String> assignments;
+        	int is_final = 0;
+        	int is_midterm = 0;
+        	int marking_period;
+        	Boolean validCourse = true;
+        	Boolean realTerm;
+        	ArrayList<String> courses = PowerSchool.checkCourseByStudent(activeUser.getUserId()-3);
+        	int course_select;
+			do {
+        		System.out.println("\nChoose a course.\n");
+        		int counter = 1;
+        		for(String i: courses) {
+        			System.out.print("[" + counter + "] ");
+        			System.out.println(i);
+        			counter++;
+            	}
+    			System.out.print("\n::: ");
+        		
+    			course_select = in.nextInt();
+    			
+        		if (course_select <= 0 || course_select > counter) {
+        			validCourse = false;
+        			System.out.println("\nCourse not found.");
+        		}
+        	} while (!validCourse); 
+			
+			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select - 1)) - 1;
+
+        	do {
+        		realTerm = true;
+        		System.out.print("\nChoose a marking period or exam status.\n");
+        		System.out.println("\n[1] MP1 assignment.");
+            	System.out.println("[2] MP2 assignment.");
+            	System.out.println("[3] MP3 assignment.");
+            	System.out.println("[4] MP4 assignment.");
+            	System.out.println("[5] Midterm exam.");
+            	System.out.println("[6] Final exam.");
+            	System.out.print("\n::: ");
+            	
+            	marking_period = in.nextInt();
+            	
+            	switch (marking_period){
+            		case 1: break;
+            		case 2: break;
+            		case 3: break;
+            		case 4: break;
+            		case 5: marking_period = -1;
+            		is_midterm = 1;
+            		break;
+            		case 6: marking_period = -1;
+            		is_final = 1;
+            		break;
+            		default: realTerm = false;
+            		break;
+            	}
+        	} while (!realTerm);
+        	
+        	ArrayList<String> assignmentAndGrade = PowerSchool.showAssignmentGrade(PowerSchool.getStudentId(activeUser.getUserId()));
+        	for (int i = 0; i <= assignmentAndGrade.size() - 3; i += 3) {
+        		System.out.print(i + 1 + ". " + assignmentAndGrade.get(i) + " / " + assignmentAndGrade.get(i + 1) + " (out of " + assignmentAndGrade.get(i + 3) + " pts)\n"); 
+        	}
         }
         
         private void showGradeUI() throws ClassNotFoundException, SQLException {
@@ -289,7 +353,7 @@ public class Application {
         		}
         	} while (!validCourse); 
 			
-			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select - 1));
+			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select - 1)) - 1;
 
         	do {
         		realTerm = true;
@@ -392,7 +456,7 @@ public class Application {
         		}
         	} while (!validCourse); 
 			
-			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select - 1));
+			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select - 1)) - 1;
 
         	do {
         		realTerm = true;
@@ -487,7 +551,7 @@ public class Application {
         		}
         	} while (!validCourse); 
 			
-			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select));
+			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select)) - 1;
 
         	do {
         		realTerm = true;
@@ -532,7 +596,8 @@ public class Application {
         	if (Utils.confirm(in, "\nAre you sure you want to delete this assignment? (y/n) ")) {
                 if (in != null) {
                 	PowerSchool.delAssignment(Integer.parseInt(assignment_idString));
-                	System.out.print("\nSuccessfully deleted " + assignments.get(assignmentToDelete - 3) + ".");
+                	
+                	System.out.print("\nSuccessfully deleted " + assignments.get(assignmentToDelete * 3 - 3) + ".");
                 }
         	}        	
         }

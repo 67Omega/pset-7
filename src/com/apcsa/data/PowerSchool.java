@@ -181,6 +181,27 @@ public class PowerSchool {
            }
         return coursesAndGrade;
       }
+    
+    public static ArrayList<String> showAssignmentGrade(int student_id) throws ClassNotFoundException, SQLException {
+        ArrayList<String> assignmentAndGrade = new ArrayList<>();
+        try (Connection conn = getConnection();
+               PreparedStatement stmt = conn.prepareStatement(QueryUtils.SHOW_ASSIGNMENT_GRADE)) {
+
+        		stmt.setInt(1, student_id);
+        	
+               try (ResultSet rs = stmt.executeQuery()) {
+                
+                   while (rs.next()) {
+                	  assignmentAndGrade.add(rs.getString("title"));
+                	  assignmentAndGrade.add(rs.getString("points_earned"));
+                	  assignmentAndGrade.add(rs.getString("point_value"));
+                   }
+               }
+           } catch (SQLException e) {
+               e.printStackTrace();
+           }
+        return assignmentAndGrade;
+      }
     /**
      * Returns the administrator account associated with the user.
      *
@@ -417,11 +438,30 @@ public class PowerSchool {
         return courses;
     }
     
+    public static ArrayList<String> checkCourseByStudent(int student_id) {
+    	ArrayList<String> courses = new ArrayList<>();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_COURSE_STUDENT)) {
+        	
+        	stmt.setInt(1, student_id);
+        	
+            try (ResultSet rs = stmt.executeQuery()) {
+             
+                while (rs.next()) {
+             	  courses.add(rs.getString("course_no"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return courses;
+    }
+    
     public static ArrayList<String> checkAssignmentByTeacher(int course_id, int marking_period, int is_midterm, int is_final) {
     	ArrayList<String> assignments = new ArrayList<>();
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(QueryUtils.SHOW_ASSIGNMENTS)) {
-        	
+        	System.out.print(course_id + " " + marking_period + " " + is_midterm + " " + is_final);
         	conn.setAutoCommit(false);
             stmt.setInt(1, course_id);
 			stmt.setInt(2, marking_period);

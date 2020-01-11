@@ -98,6 +98,11 @@ public class QueryUtils {
     				"ON t.teacher_id = c.teacher_id " +
     				"WHERE t.teacher_id = ?";
     
+    public static String GET_COURSE_STUDENT =
+    		"SELECT c.course_no FROM students AS s " +
+        			"INNER JOIN course_grades g ON g.student_id = s.student_id " + 
+        			"INNER JOIN courses c ON c.course_id = g.course_id " +
+        			"WHERE s.student_id = ? ";
     public static String GET_STUDENT_GRADE = 
     		"SELECT c.grade FROM course_grades c " +
     				"INNER JOIN students s " +
@@ -135,12 +140,7 @@ public class QueryUtils {
     				"INNER JOIN students s " +
     				"ON s.student_id = a.student_id " +
     				"WHERE (a.assignment_id = ? AND s.student_id = ?)";
-    public static String SHOW_ASSIGNMENT_GRADE =
-    		"SELECT a.title, g.points_earned " +
-    				"FROM assignments AS a " +
-    				"INNER JOIN assignment_grades g " +
-    				"ON g.assignment_id = a.assignment_id " +
-    				"WHERE g.student_id = ?";
+
     
     public static String SHOW_COURSE_GRADE =
     		"SELECT c.title, g.grade " +
@@ -148,8 +148,16 @@ public class QueryUtils {
     				"INNER JOIN  course_grades g " +
     				"ON c.course_id = g.course_id " +
     				"WHERE g.student_Id = ?";
+    
     public static String GET_STUDENT_ID =
     		"SELECT student_id FROM students " +
     				"WHERE user_id = ?";
+    
+    public static String SHOW_ASSIGNMENT_GRADE =
+    		"SELECT a.title, g.points_earned, a.point_value " +
+    				"FROM assignments AS a " +
+    				"INNER JOIN assignment_grades g " +
+    				"ON g.assignment_id = a.assignment_id " +
+    				"WHERE g.student_id = ?";
 }
 
