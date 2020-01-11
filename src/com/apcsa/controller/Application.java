@@ -28,7 +28,6 @@ import com.apcsa.controller.Utils;
 public class Application {
     private Scanner in;
     private User activeUser;
-    private static final AtomicInteger assignmentIdCounter = new AtomicInteger(0); 
     enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
     enum StudentAction { COURSEGRADE, ASSIGNMENTGRADE, PASSWORD, LOGOUT }
     enum AdminAction { FACULTY, FACULTY_BY_DEP, STUDENT, STUDENT_GRADE, STUDENT_COURSE, PASSWORD, LOGOUT }
@@ -353,7 +352,7 @@ public class Application {
         		}
         	} while (!validCourse); 
 			
-			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select - 1)) - 1;
+			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select - 1));
 
         	do {
         		realTerm = true;
@@ -506,12 +505,10 @@ public class Application {
         	
         	if (Utils.confirm(in, "\nAre you sure you want to create this assignment? (y/n) ")) {
                 if (in != null) {
-                	assignment_id = assignmentIdCounter.incrementAndGet(); 
+                	assignment_id = 1 + PowerSchool.checkLastAId(course_id);
                 	PowerSchool.addAssignment(course_id, assignment_id, marking_period, is_midterm, is_final, title, point_value);
                 	ArrayList<Student> students = PowerSchool.showStudentsCourse(PowerSchool.getCourseNo(course_id));
-                	System.out.println(PowerSchool.getCourseNo(course_id));
                 	for(Student i: students) {
-                		System.out.println(i.getStudentId());
                 		PowerSchool.addStudentToAssignment(course_id, assignment_id, i.getStudentId(), point_value);
                		} 
                 	

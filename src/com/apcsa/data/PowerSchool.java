@@ -365,8 +365,23 @@ public class PowerSchool {
             e.printStackTrace();
         }
         return null;
+    }    
+    public static int checkLastAId(int course_id) {
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_LAST_ID)) {
+        	
+
+            try (ResultSet rs = stmt.executeQuery()) {
+             
+                if (rs.next()) {
+             	  return rs.getInt("assignment_id");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
-    
     public static ArrayList<String> checkCourseNo() {
     	ArrayList<String> courses = new ArrayList<>();
         try (Connection conn = getConnection();
@@ -672,7 +687,7 @@ public class PowerSchool {
   	            
   	            stmt.setInt(1, assignment_id);
   	          stmt.setInt(1, course_id);
-  	        stmt.setString(1, title);
+  
   	            stmt.execute();
   	  			} catch (SQLException e) {
   	  				System.out.println(e.getMessage());

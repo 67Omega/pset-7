@@ -123,18 +123,18 @@ public class QueryUtils {
     
     public static String ADD_GRADE = 
     		"UPDATE assignment_grades " +
-    	    		"SET points_earned = ? AND is_graded = 1" +
+    	    		"SET points_earned = ? AND is_graded = 1 " +
     	    		"WHERE student_id = ? AND assignment_id = ?";
+    public static String GET_LAST_ID = 
+    		"SELECT assignment_id FROM assignments " + 	
+    				"WHERE assignment_id = ( SELECT max(assignment_id) FROM assignments) AND course_id = ?";
     
     public static final String ADD_STUDENT_TO_ASSIGNMENT = 
     		"INSERT INTO assignment_grades(course_id, assignment_id, student_id, points_possible, is_graded) " +
     	    		"VALUES (?, ?, ?, ?, 0)";
 
 	public static final String DEL_ASSIGNMENT_GRADE = 
-			"DELETE g FROM assignment_grades AS g " +
-				"INNER JOIN assignments a " +
-				"ON a.assignment_id = g.assignment_id " +
-				"WHERE g.assignment_id = ? AND a.course_id = ? AND a.title = ?";
+			"DELETE FROM assignment_grades WHERE assignment_id = ? AND course_id = ?";
     
     public static String STUDENT_ASSIGNMENT =
     		"SELECT * FROM students s " +
