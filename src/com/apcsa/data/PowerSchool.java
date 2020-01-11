@@ -162,21 +162,24 @@ public class PowerSchool {
         return students;
       }
 
-    public static ArrayList<Student> showCourseGrade() throws ClassNotFoundException, SQLException {
-        ArrayList<Student> students = new ArrayList<>();
+    public static ArrayList<String> showCourseGrade(int student_id) throws ClassNotFoundException, SQLException {
+        ArrayList<String> coursesAndGrade = new ArrayList<>();
         try (Connection conn = getConnection();
-                PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENTS_SQL)) {
+               PreparedStatement stmt = conn.prepareStatement(QueryUtils.SHOW_COURSE_GRADE)) {
 
+        		stmt.setInt(1, student_id);
+        	
                try (ResultSet rs = stmt.executeQuery()) {
                 
                    while (rs.next()) {
-                	  students.add(new Student(rs));
+                	  coursesAndGrade.add("title");
+                	  coursesAndGrade.add("course_grades");
                    }
                }
            } catch (SQLException e) {
                e.printStackTrace();
            }
-        return students;
+        return coursesAndGrade;
       }
     /**
      * Returns the administrator account associated with the user.
@@ -307,7 +310,22 @@ public class PowerSchool {
         return null;
     }
     
-    
+    public static int getStudentId(int user_id) {
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_ID)) {
+
+            stmt.setInt(1, user_id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("student_id");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
     
     public static String getAssignmentGrade(int assignment_id, int student_id) {
         try (Connection conn = getConnection();

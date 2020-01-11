@@ -124,10 +124,10 @@ public class Application {
             }
         }
         
-        private void showStudentUI() {
+        private void showStudentUI() throws ClassNotFoundException, SQLException {
             while (activeUser != null) {
                 switch (getStudentMenuSelection()) {
-                   // case COURSEGRADE: viewCourseGrades(); break;
+                   	case COURSEGRADE: viewCourseGrades(); break;
                     //case ASSIGNMENTGRADE: viewAssignmentGrades(); break;
                     case PASSWORD: changePassword(); break;
                     case LOGOUT: logout(); break;
@@ -136,7 +136,9 @@ public class Application {
             }
         }
         
-        private void showTeacherUI() throws ClassNotFoundException, SQLException {
+        
+
+		private void showTeacherUI() throws ClassNotFoundException, SQLException {
             while (activeUser != null) {
                 switch (getTeacherMenuSelection()) {
                     case ENROLLMENT: coursesTeacher(); break;
@@ -191,6 +193,13 @@ public class Application {
             	case 4: return GradeList.SENIOR;
             default: return null;
         }
+        }
+        
+        private void viewCourseGrades() throws ClassNotFoundException, SQLException {
+			ArrayList<String> courseAndGrade = PowerSchool.showCourseGrade(PowerSchool.getStudentId(activeUser.getUserId()));
+			for (int i = 0; i <= courseAndGrade.size(); i++) {
+    			System.out.println(i + 1 + ". " + courseAndGrade.get(i) + " / " + courseAndGrade.get(i + 1));
+    		}
         }
         
         private void showGradeUI() throws ClassNotFoundException, SQLException {
@@ -249,6 +258,9 @@ public class Application {
         			counter++;
         		}  
 		}
+        
+        
+        
         private void addGrade () throws ClassNotFoundException, SQLException {
         	ArrayList<String> assignments;
         	int is_final = 0;
@@ -847,13 +859,14 @@ public class Application {
      * @param args unused command line argument list
      */
     public void changePassword() {
-    	System.out.print("Enter current password: ");
+    	System.out.print(activeUser.getPassword());
+    	System.out.print("\nEnter current password: ");
     	String passwordCheck = in.next();
     	System.out.print("Enter new password: ");
     	String newPassword = in.next();
     	
-    	if (!(passwordCheck.equals(activeUser.getPassword()))) {
-    		System.out.println("Invalid current password.");
+    	if (!(Utils.getHash(passwordCheck).equals(activeUser.getPassword()))) {
+    		System.out.println("\nInvalid current password.");
     	} else {
     		String newPass = activeUser.setPassword(newPassword);
 			PowerSchool.updatePassword(newPass, activeUser.getUsername());

@@ -38,6 +38,7 @@ public class Student extends User {
 		this.lastName = rs.getString("last_name");
 	}
 	
+	
 	public int getStudentId() {
 		return studentId;
 	}
