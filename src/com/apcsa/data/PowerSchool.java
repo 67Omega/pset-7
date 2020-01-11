@@ -162,6 +162,22 @@ public class PowerSchool {
         return students;
       }
 
+    public static ArrayList<Student> showCourseGrade() throws ClassNotFoundException, SQLException {
+        ArrayList<Student> students = new ArrayList<>();
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENTS_SQL)) {
+
+               try (ResultSet rs = stmt.executeQuery()) {
+                
+                   while (rs.next()) {
+                	  students.add(new Student(rs));
+                   }
+               }
+           } catch (SQLException e) {
+               e.printStackTrace();
+           }
+        return students;
+      }
     /**
      * Returns the administrator account associated with the user.
      *
@@ -220,11 +236,13 @@ public class PowerSchool {
   	    }
   
     
-    public static int gradeAssignment(int points_earned) throws ClassNotFoundException, SQLException{
+    public static int gradeAssignment(int points_earned, int student_id, int assignment_id) throws ClassNotFoundException, SQLException{
   	  try (Connection conn = getConnection();
   	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.ADD_GRADE)) {
   	            conn.setAutoCommit(false);
   	            stmt.setInt(1, points_earned);
+  	            stmt.setInt(2, student_id);
+  	            stmt.setInt(3, assignment_id);
   	            if (stmt.executeUpdate() == 1) {
   	                conn.commit();
 
@@ -300,7 +318,7 @@ public class PowerSchool {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getString("grade");
+                    return rs.getString("points_earned");
                 }
             }
         } catch (SQLException e) {
@@ -345,22 +363,22 @@ public class PowerSchool {
         }
 		return 0;
     }
-	public static int checkCourseNo(String course_id) {
+	public static String getCourseNo(int course_id) {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(QueryUtils.CHECK_COURSE_NO)) {
         	
-        	stmt.setString(1, course_id);
+        	stmt.setInt(1, course_id);
 
             try (ResultSet rs = stmt.executeQuery()) {
              
                 while (rs.next()) {
-             	  return rs.getInt("course_no");
+             	  return rs.getString("course_no");
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-		return 0;
+		return "";
     }
     public static ArrayList<String> checkCourseByTeacher(int teacher_id) {
     	ArrayList<String> courses = new ArrayList<>();

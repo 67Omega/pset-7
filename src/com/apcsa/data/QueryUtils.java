@@ -117,8 +117,10 @@ public class QueryUtils {
     				"WHERE assignment_id = ?";
     
     public static String ADD_GRADE = 
-    		"INSERT INTO assignment_grades(points_earned) " +
-    	    		"VALUES (?)";
+    		"UPDATE assignment_grades " +
+    	    		"SET points_earned = ? " +
+    	    		"WHERE student_id = ? AND assignment_id = ?";
+    
     public static final String ADD_STUDENT_TO_ASSIGNMENT = 
     		"INSERT INTO assignment_grades(course_id, assignment_id, student_id, points_possible) " +
     	    		"VALUES (?, ?, ?, ?)";

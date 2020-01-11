@@ -905,7 +905,7 @@ CREATE TABLE IF NOT EXISTS assignments (
     title TEXT NOT NULL,
     point_value INTEGER NOT NULL,
     FOREIGN KEY (course_id) REFERENCES courses (course_id),
-    PRIMARY KEY (course_id, assignment_id, marking_period, title)
+    PRIMARY KEY (assignment_id)
 );
 
 DROP TABLE IF EXISTS assignment_grades;
@@ -916,7 +916,7 @@ CREATE TABLE IF NOT EXISTS assignment_grades (
     points_earned INTEGER,
     points_possible INTEGER NOT NULL,
     FOREIGN KEY (course_id) REFERENCES courses (course_id),
-    FOREIGN KEY (assignment_id) REFERENCES assignemnts (assignment_id),
+    FOREIGN KEY (assignment_id) REFERENCES assignments (assignment_id),
     FOREIGN KEY (student_id) REFERENCES students (student_id),
     PRIMARY KEY (course_id, assignment_id, student_id)
 );

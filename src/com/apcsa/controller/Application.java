@@ -1,6 +1,8 @@
 package com.apcsa.controller;
 
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.apcsa.data.PowerSchool;
 import com.apcsa.data.QueryUtils;
 import com.apcsa.model.Administrator;
@@ -26,7 +28,8 @@ import com.apcsa.controller.Utils;
 public class Application {
     private Scanner in;
     private User activeUser;
-    public static int assignmentIdCounter = 0;
+
+    private static final AtomicInteger assignmentIdCounter = new AtomicInteger(0); 
     enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
     enum StudentAction { COURSEGRADE, ASSIGNMENTGRADE, PASSWORD, LOGOUT }
     enum AdminAction { FACULTY, FACULTY_BY_DEP, STUDENT, STUDENT_GRADE, STUDENT_COURSE, PASSWORD, LOGOUT }
@@ -277,7 +280,7 @@ public class Application {
 
         	do {
         		realTerm = true;
-        		System.out.print("Choose a marking period or exam status.");
+        		System.out.print("\nChoose a marking period or exam status.\n");
         		System.out.println("\n[1] MP1 assignment.");
             	System.out.println("[2] MP2 assignment.");
             	System.out.println("[3] MP3 assignment.");
@@ -304,7 +307,7 @@ public class Application {
             	}
         	} while (!realTerm);
         	
-        		System.out.println("\nChoose an assignment. ");
+        		System.out.println("\nChoose an assignment.\n");
         		assignments = PowerSchool.checkAssignmentByTeacher(course_id, marking_period, is_midterm, is_final);
         		int counter = 1;
         		for (int i = 0; i < assignments.size(); i += 3) {
@@ -323,9 +326,9 @@ public class Application {
             			System.out.print(i.getFirstName());
             			counter1++;
             		} 
-            	System.out.print("\n::: ");
+            	System.out.print("\n\n::: ");
         		int studentSelected = in.nextInt();
-        		System.out.print("Assignment: " + assignments.get(assignmentSelected - 1) + "\n");
+        		System.out.print("\nAssignment: " + assignments.get(assignmentSelected - 1) + "\n");
         		System.out.print("Student: " + students.get(studentSelected - 1).getLastName() + ", " + students.get(studentSelected - 1).getFirstName() + "\n");
         		System.out.print("Current Grade: ");
         		if (PowerSchool.getAssignmentGrade(Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), (studentSelected - 1)) == null) {
@@ -339,13 +342,14 @@ public class Application {
         	
         	if (Utils.confirm(in, "\nAre you sure you want to enter this grade? (y/n) ")) {
                 if (in != null) {
-                	PowerSchool.gradeAssignment(points_earned);
+                	PowerSchool.gradeAssignment(points_earned, students.get(studentSelected - 1).getStudentId(), Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)));
                 	System.out.print("\nSuccessfully entered.");
                 }
         	}        	
         }
 
         private void addAssignment() throws ClassNotFoundException, SQLException {
+        	int assignment_id;
         	int point_value = 1;
         	int is_final = 0;
         	int is_midterm = 0;
@@ -379,7 +383,7 @@ public class Application {
 
         	do {
         		realTerm = true;
-        		System.out.print("Choose a marking period or exam status.");
+        		System.out.print("\nChoose a marking period or exam status.\n");
         		System.out.println("\n[1] MP1 assignment.");
             	System.out.println("[2] MP2 assignment.");
             	System.out.println("[3] MP3 assignment.");
@@ -425,11 +429,13 @@ public class Application {
         	
         	if (Utils.confirm(in, "\nAre you sure you want to create this assignment? (y/n) ")) {
                 if (in != null) {
-                	assignmentIdCounter++;
-                	PowerSchool.addAssignment(course_id, assignmentIdCounter, marking_period, is_midterm, is_final, title, point_value);
-                	ArrayList<Student> students = PowerSchool.showStudentsCourse(Integer.toString(PowerSchool.checkCourseNo(Integer.toString(course_id))));
+                	assignment_id = assignmentIdCounter.incrementAndGet(); 
+                	PowerSchool.addAssignment(course_id, assignment_id, marking_period, is_midterm, is_final, title, point_value);
+                	ArrayList<Student> students = PowerSchool.showStudentsCourse(PowerSchool.getCourseNo(course_id));
+                	System.out.println(PowerSchool.getCourseNo(course_id));
                 	for(Student i: students) {
-                		PowerSchool.addStudentToAssignment(course_id, assignmentIdCounter, i.getStudentId(), point_value);
+                		System.out.println(i.getStudentId());
+                		PowerSchool.addStudentToAssignment(course_id, assignment_id, i.getStudentId(), point_value);
                		} 
                 	
                 	System.out.print("\nSuccessfully created assignment.");
@@ -634,7 +640,7 @@ public class Application {
                 case 3: return TeacherAction.DELETE;
                 case 4: return TeacherAction.GRADE;
                 case 5: return TeacherAction.PASSWORD;
-                case 6: return TeacherAction.GRADE;
+                case 6: return TeacherAction.LOGOUT;
                 default: return null;
             }
          }
