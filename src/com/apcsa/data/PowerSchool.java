@@ -282,12 +282,13 @@ public class PowerSchool {
   	            return -1;
   	        }
   	    }
-    public static void delAssignment(int assignment_id) throws ClassNotFoundException, SQLException{
+    public static void delAssignment(int assignment_id, int course_id, String title) throws ClassNotFoundException, SQLException{
   	  try (Connection conn = getConnection();
   	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.DEL_ASSIGNMENT)) {
   	            
   	            stmt.setInt(1, assignment_id);
- 
+  	            stmt.setInt(2, course_id);
+  	            stmt.setString(3, title);
   	            stmt.execute();
   	  			} catch (SQLException e) {
   	  				System.out.println(e.getMessage());
@@ -664,4 +665,18 @@ public class PowerSchool {
             e.printStackTrace();
         }
     }
+
+	public static void delAssignmentGrade(int assignment_id, int course_id, String title) {
+		try (Connection conn = getConnection();
+  	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.DEL_ASSIGNMENT_GRADE)) {
+  	            
+  	            stmt.setInt(1, assignment_id);
+  	          stmt.setInt(1, course_id);
+  	        stmt.setString(1, title);
+  	            stmt.execute();
+  	  			} catch (SQLException e) {
+  	  				System.out.println(e.getMessage());
+  	  			}
+
+	}
 }

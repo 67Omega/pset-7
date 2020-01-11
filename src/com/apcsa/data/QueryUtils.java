@@ -119,16 +119,22 @@ public class QueryUtils {
     
     public static String DEL_ASSIGNMENT = 
     		"DELETE FROM assignments " +
-    				"WHERE assignment_id = ?";
+    				"WHERE assignment_id = ? AND course_id = ? AND title = ?";
     
     public static String ADD_GRADE = 
     		"UPDATE assignment_grades " +
-    	    		"SET points_earned = ? " +
+    	    		"SET points_earned = ? AND is_graded = 1" +
     	    		"WHERE student_id = ? AND assignment_id = ?";
     
     public static final String ADD_STUDENT_TO_ASSIGNMENT = 
-    		"INSERT INTO assignment_grades(course_id, assignment_id, student_id, points_possible) " +
-    	    		"VALUES (?, ?, ?, ?)";
+    		"INSERT INTO assignment_grades(course_id, assignment_id, student_id, points_possible, is_graded) " +
+    	    		"VALUES (?, ?, ?, ?, 0)";
+
+	public static final String DEL_ASSIGNMENT_GRADE = 
+			"DELETE g FROM assignment_grades AS g " +
+				"INNER JOIN assignments a " +
+				"ON a.assignment_id = g.assignment_id " +
+				"WHERE g.assignment_id = ? AND a.course_id = ? AND a.title = ?";
     
     public static String STUDENT_ASSIGNMENT =
     		"SELECT * FROM students s " +

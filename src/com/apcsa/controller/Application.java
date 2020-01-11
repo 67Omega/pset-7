@@ -456,7 +456,7 @@ public class Application {
         		}
         	} while (!validCourse); 
 			
-			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select - 1)) - 1;
+			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select - 1));
 
         	do {
         		realTerm = true;
@@ -595,7 +595,8 @@ public class Application {
         	} while (!validAssignment);
         	if (Utils.confirm(in, "\nAre you sure you want to delete this assignment? (y/n) ")) {
                 if (in != null) {
-                	PowerSchool.delAssignment(Integer.parseInt(assignment_idString));
+                	PowerSchool.delAssignment(Integer.parseInt(assignment_idString), course_id, assignments.get(assignmentToDelete * 3 - 1));
+                	PowerSchool.delAssignmentGrade(Integer.parseInt(assignment_idString), course_id, assignments.get(assignmentToDelete * 3 - 1));
                 	
                 	System.out.print("\nSuccessfully deleted " + assignments.get(assignmentToDelete * 3 - 3) + ".");
                 }
