@@ -28,7 +28,6 @@ import com.apcsa.controller.Utils;
 public class Application {
     private Scanner in;
     private User activeUser;
-
     private static final AtomicInteger assignmentIdCounter = new AtomicInteger(0); 
     enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
     enum StudentAction { COURSEGRADE, ASSIGNMENTGRADE, PASSWORD, LOGOUT }
@@ -61,7 +60,7 @@ public class Application {
        while (true) {
             System.out.print("\nUsername: ");
             String username = in.next();
-
+            
             System.out.print("Password: ");
             String password = in.next();
 
@@ -73,7 +72,7 @@ public class Application {
                     ? PowerSchool.getTeacher(activeUser) : activeUser.isStudent()
                     ? PowerSchool.getStudent(activeUser) : activeUser.isRoot()
                     ? activeUser : null;
-
+                    
                 if (isFirstLogin() && !activeUser.isRoot()) {
                     // first-time users need to change their passwords from the default provided
                 	System.out.print("\nEnter new password: ");
@@ -82,7 +81,7 @@ public class Application {
 					PowerSchool.updatePassword (newPass, username);
                 	
                 }
-
+                activeUser.setUsername(username);
                 createAndShowUI();
             } else {
                 System.out.println("\nInvalid username and/or password.");
@@ -197,8 +196,10 @@ public class Application {
         
         private void viewCourseGrades() throws ClassNotFoundException, SQLException {
 			ArrayList<String> courseAndGrade = PowerSchool.showCourseGrade(PowerSchool.getStudentId(activeUser.getUserId()));
-			for (int i = 0; i <= courseAndGrade.size(); i++) {
-    			System.out.println(i + 1 + ". " + courseAndGrade.get(i) + " / " + courseAndGrade.get(i + 1));
+			System.out.print("\n");
+			for (int i = 0; i < courseAndGrade.size(); i += 2) {
+				String grade = (courseAndGrade.get(i + 1) == null) ? "--" : (courseAndGrade.get(i + 1));
+    			System.out.print(i + 1 + ". " + courseAndGrade.get(i) + " / " + grade + "\n");
     		}
         }
         
@@ -859,7 +860,7 @@ public class Application {
      * @param args unused command line argument list
      */
     public void changePassword() {
-    	System.out.print(activeUser.getPassword());
+
     	System.out.print("\nEnter current password: ");
     	String passwordCheck = in.next();
     	System.out.print("Enter new password: ");
@@ -868,9 +869,10 @@ public class Application {
     	if (!(Utils.getHash(passwordCheck).equals(activeUser.getPassword()))) {
     		System.out.println("\nInvalid current password.");
     	} else {
+
     		String newPass = activeUser.setPassword(newPassword);
 			PowerSchool.updatePassword(newPass, activeUser.getUsername());
-			System.out.println("Successfully changed password.");
+			System.out.print("\nSuccessfully changed password.");
     	}
     }
 

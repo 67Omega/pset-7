@@ -172,8 +172,8 @@ public class PowerSchool {
                try (ResultSet rs = stmt.executeQuery()) {
                 
                    while (rs.next()) {
-                	  coursesAndGrade.add("title");
-                	  coursesAndGrade.add("course_grades");
+                	  coursesAndGrade.add(rs.getString("title"));
+                	  coursesAndGrade.add(rs.getString("grade"));
                    }
                }
            } catch (SQLException e) {
@@ -574,7 +574,6 @@ public class PowerSchool {
 
             if (stmt.executeUpdate() == 1) {
                 conn.commit();
-
                 return 1;
             } else {
                 conn.rollback();

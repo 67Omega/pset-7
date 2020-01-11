@@ -69,6 +69,9 @@ public class User {
         return accountType;
     }
 
+    public void setUsername(String username) {
+    	this.username = username;
+    }
     /**
      * @return username
      */
@@ -90,6 +93,8 @@ public class User {
 		String newPass = Utils.getHash(newPassword);
 		return newPass;
     }
+    
+
     
     /**
      * @return lastLogin
