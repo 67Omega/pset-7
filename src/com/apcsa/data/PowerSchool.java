@@ -108,12 +108,13 @@ public class PowerSchool {
         return teachers;
       }
 
-    public static ArrayList<Student> showStudentsAssignment(String assignment_id) throws ClassNotFoundException, SQLException {
+    public static ArrayList<Student> showStudentsAssignment(String assignment_id, int course_id) throws ClassNotFoundException, SQLException {
         ArrayList<Student> students = new ArrayList<>();
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement(QueryUtils.STUDENT_ASSIGNMENT)) {
 
         	  	stmt.setString(1, assignment_id);
+        	  	stmt.setInt(2, course_id);
                
         	  	try (ResultSet rs = stmt.executeQuery()) {
                 
@@ -182,13 +183,16 @@ public class PowerSchool {
         return coursesAndGrade;
       }
     
-    public static ArrayList<String> showAssignmentGrade(int student_id) throws ClassNotFoundException, SQLException {
+    public static ArrayList<String> showAssignmentGrade(int student_id, int course_id, int marking_period, int is_midterm, int is_final) throws ClassNotFoundException, SQLException {
         ArrayList<String> assignmentAndGrade = new ArrayList<>();
         try (Connection conn = getConnection();
                PreparedStatement stmt = conn.prepareStatement(QueryUtils.SHOW_ASSIGNMENT_GRADE)) {
 
         		stmt.setInt(1, student_id);
-        	
+        		stmt.setInt(2, course_id);
+        		stmt.setInt(3, marking_period);
+        		stmt.setInt(4, is_midterm);
+        		stmt.setInt(5, is_final);
                try (ResultSet rs = stmt.executeQuery()) {
                 
                    while (rs.next()) {

@@ -140,7 +140,7 @@ public class QueryUtils {
     		"SELECT * FROM students s " +
     				"INNER JOIN assignment_grades a " +
     				"ON s.student_id  = a.student_id " +
-    				"WHERE a.assignment_id = ?";
+    				"WHERE a.assignment_id = ? AND a.course_id = ?";
     public static String SHOW_GRADE =
     		"SELECT a.points_earned FROM assignment_grades a " +
     				"INNER JOIN students s " +
@@ -163,7 +163,8 @@ public class QueryUtils {
     		"SELECT a.title, g.points_earned, a.point_value " +
     				"FROM assignments AS a " +
     				"INNER JOIN assignment_grades g " +
-    				"ON g.assignment_id = a.assignment_id " +
-    				"WHERE g.student_id = ?";
+    				"ON g.assignment_id = a.assignment_id AND g.course_id = a.course_id " +
+    				"WHERE g.student_id = ? AND g.course_id = ? AND a.marking_period = ? " +
+    				"AND is_midterm = ? AND is_final = ?";
 }
 

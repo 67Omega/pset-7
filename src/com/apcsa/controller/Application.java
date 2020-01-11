@@ -203,13 +203,12 @@ public class Application {
         }
         
         private void viewAssignmentGrades() throws ClassNotFoundException, SQLException {
-        	ArrayList<String> assignments;
         	int is_final = 0;
         	int is_midterm = 0;
         	int marking_period;
         	Boolean validCourse = true;
         	Boolean realTerm;
-        	ArrayList<String> courses = PowerSchool.checkCourseByStudent(activeUser.getUserId()-3);
+        	ArrayList<String> courses = PowerSchool.checkCourseByStudent(PowerSchool.getStudentId(activeUser.getUserId()));
         	int course_select;
 			do {
         		System.out.println("\nChoose a course.\n");
@@ -229,7 +228,7 @@ public class Application {
         		}
         	} while (!validCourse); 
 			
-			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select - 1)) - 1;
+			int course_id = PowerSchool.checkCourseId(courses.get(course_select - 1));
 
         	do {
         		realTerm = true;
@@ -260,9 +259,11 @@ public class Application {
             	}
         	} while (!realTerm);
         	
-        	ArrayList<String> assignmentAndGrade = PowerSchool.showAssignmentGrade(PowerSchool.getStudentId(activeUser.getUserId()));
-        	for (int i = 0; i <= assignmentAndGrade.size() - 3; i += 3) {
-        		System.out.print(i + 1 + ". " + assignmentAndGrade.get(i) + " / " + assignmentAndGrade.get(i + 1) + " (out of " + assignmentAndGrade.get(i + 3) + " pts)\n"); 
+        	
+			System.out.print("\n");
+        	ArrayList<String> assignmentAndGrade = PowerSchool.showAssignmentGrade(PowerSchool.getStudentId(activeUser.getUserId()), course_id, marking_period, is_midterm, is_final);
+        	for (int i = 0; i <= assignmentAndGrade.size() - 2; i += 3) {
+        		System.out.print(i + 1 + ". " + assignmentAndGrade.get(i) + " / " + assignmentAndGrade.get(i + 1) + " (out of " + assignmentAndGrade.get(i + 2) + " pts)"); 
         	}
         }
         
@@ -352,7 +353,8 @@ public class Application {
         		}
         	} while (!validCourse); 
 			
-			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select - 1));
+			int course_id = PowerSchool.checkCourseId(courses.get(course_select - 1));
+			System.out.print(course_id);
 
         	do {
         		realTerm = true;
@@ -383,7 +385,7 @@ public class Application {
             	}
         	} while (!realTerm);
         	
-        		System.out.println("\nChoose an assignment.\n");
+        		System.out.print("\nChoose an assignment.\n\n");
         		assignments = PowerSchool.checkAssignmentByTeacher(course_id, marking_period, is_midterm, is_final);
         		int counter = 1;
         		for (int i = 0; i < assignments.size(); i += 3) {
@@ -394,7 +396,7 @@ public class Application {
         		
         	
         		int assignmentSelected = in.nextInt();
-				ArrayList<Student> students = PowerSchool.showStudentsAssignment(assignments.get(assignmentSelected * 3 - 1));
+				ArrayList<Student> students = PowerSchool.showStudentsAssignment(assignments.get(assignmentSelected * 3 - 1), course_id);
             	int counter1 = 1;
             	for(Student i: students) {
             			System.out.print("\n[" + counter1 + "] ");
@@ -455,7 +457,8 @@ public class Application {
         		}
         	} while (!validCourse); 
 			
-			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select - 1));
+			int course_id = PowerSchool.checkCourseId(courses.get(course_select - 1));
+			System.out.print(course_id);
 
         	do {
         		realTerm = true;
@@ -548,7 +551,7 @@ public class Application {
         		}
         	} while (!validCourse); 
 			
-			int course_id = PowerSchool.checkCourseId(PowerSchool.checkCourseNo().get(course_select)) - 1;
+			int course_id = PowerSchool.checkCourseId(courses.get(course_select - 1));
 
         	do {
         		realTerm = true;
