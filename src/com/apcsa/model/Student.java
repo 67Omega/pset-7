@@ -61,12 +61,20 @@ public class Student extends User {
 		return gradeLevel;
 	}
 	
+	public void setGPA(double newGpa) {
+        gpa = newGpa;
+    }
 	
 	public double getGpa() {
 		
 		return gpa;
 	}
-
+	 public String formatGpa() {
+		    if (this.gpa == -1.0D) {
+		      return "--";
+		    }
+		    return String.format("%.3f", new Object[] { Double.valueOf(this.gpa) });
+		  }
 	public void setClassRank(int i) {
 		// TODO Auto-generated method stub
 		

@@ -216,6 +216,7 @@ public class PowerSchool {
     public static int addAssignment(int course_id, int assignment_id, int marking_period, int is_midterm, int is_final, String title, int point_value) throws ClassNotFoundException, SQLException{
     	  try (Connection conn = getConnection();
     	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.ADD_ASSIGNMENT)) {
+    		  		//System.out.print(course_id + assignment_id + marking_period + is_midterm + is_final + title + point_value);
     	            conn.setAutoCommit(false);
     	            stmt.setInt(1, course_id);
     	            stmt.setInt(2, assignment_id);
@@ -376,6 +377,7 @@ public class PowerSchool {
              PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_LAST_ID)) {
         	
         	stmt.setInt(1, course_id);
+        	stmt.setInt(2, course_id);
         	
             try (ResultSet rs = stmt.executeQuery()) {
              
@@ -405,7 +407,259 @@ public class PowerSchool {
         }
         return courses;
     }
+    public static int enterGrade(int course_id, int assignment_id, int student_id, int points_earned, int points_possible) {
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             Statement stmt2 = conn.createStatement()) {
+            
+            try (ResultSet rs = stmt2.executeQuery(
+                "SELECT * FROM assignment_grades WHERE course_id = " + course_id +
+                " AND student_id = " + student_id + " AND assignment_id = " + assignment_id)) {
+                if (rs.next()) {
+                    System.out.println("\nA grade already exists for this assignment and student.\n");
+                    return 0;
+                }
+            }
+
+            if (stmt.executeUpdate(QueryUtils.ENTER_GRADE_SQL(course_id, assignment_id, student_id, points_earned, points_possible)) == 1) {
+                updateGpaAndClassRank(student_id);
+                updateCourseGrades(student_id, course_id);
+                System.out.println("\nSuccessfully entered grade.\n");
+                return 0;
+            } else {
+                return 1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    } 
+   
+    public static void updateGpaAndClassRank(int studentId) {
+        setStudentGpa(studentId);
+
+        for (int i = 9; i < 13; i++) {
+            setStudentRank(i);
+        }
+    }
+    public static void setStudentGpa(int studentId) {
+        Student student = null;
+        ArrayList<Double> courseGrades = new ArrayList<Double>();
+        ArrayList<Integer> courseIds = new ArrayList<Integer>();
+        ArrayList<Double> courseWeights = new ArrayList<Double>();
+        try(Connection conn = getConnection()) {
+            
+            Statement stmt = conn.createStatement();
+            try (ResultSet rs = stmt.executeQuery(QueryUtils.GET_STUDENT_BY_STUDENT_ID_SQL(studentId))) {
+                if (rs.next()) {
+                    student = new Student(rs);
+                }
+            }
+
+            stmt = conn.createStatement();
+            try (ResultSet rs = stmt.executeQuery(QueryUtils.GET_STUDENT_GRADES_ALL_SQL(studentId))) {
+                while (rs.next()) {
+                    courseGrades.add(rs.getDouble("grade"));
+                    courseIds.add(rs.getInt("course_id"));
+                }
+            }
+
+            stmt = conn.createStatement();
+            for (int courseId : courseIds) {
+                try (ResultSet rs = stmt.executeQuery(QueryUtils.GET_COURSES_SQL(courseId))) {
+                    if (rs.next()) {
+                        courseWeights.add(rs.getDouble("weight"));
+                    }
+                }
+            }
+            
+            double totalWeight = 0;
+            int numCourses = courseGrades.size();
+            double calculatedGpa = -1.0;
+            for (int i = 0; i < courseGrades.size(); i++) {
+                totalWeight += courseWeights.get(i);
+                calculatedGpa = courseGrades.get(i) * courseWeights.get(i);
+            }
+
+            if (courseGrades != null) {
+                calculatedGpa = (((calculatedGpa / totalWeight) / numCourses) / 100) * 4.0;
+
+            }
+
+            student.setGPA(calculatedGpa);
+
+            stmt = conn.createStatement();
+            conn.setAutoCommit(false);
+            stmt.executeUpdate("UPDATE students SET gpa = " + student.getGpa() + " WHERE student_id = " + student.getStudentId());
+            conn.commit();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void setStudentRank(int grade) {
+
+        ArrayList<Student> students = new ArrayList<Student>(getStudentsByGrade(grade));
+
+        for (int i = 0; i < students.size(); i++) {
+            Student comparing = students.get(i);
+            int numOfBetterStudents = 0;
+
+            if (comparing.getGpa() == -1.0) {
+                students.get(i).setClassRank(0);
+            } else {
+
+                for (int j = 0; j < students.size(); j++) {
+                    if (comparing.getGpa() < students.get(j).getGpa()) {
+                        numOfBetterStudents++;
+                    }
+                }
+                students.get(i).setClassRank(numOfBetterStudents+1);
+            }
+        }
+
+        try {
+            Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement("UPDATE students SET class_rank = ? WHERE student_id = ?");
+            
+            conn.setAutoCommit(false);
+            for (Student student : students) {
+                stmt.setInt(1, student.getClassRank());
+                stmt.setInt(2, student.getStudentId());
+                stmt.executeUpdate();
+            }
+
+            conn.commit();
+        
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+            return;
+        }        
+        
+    }
+
+    public static ArrayList<Student> getStudentsByGrade(int grade) {
+        ArrayList<Student> students = new ArrayList<Student>();
+
+        try (Connection conn = getConnection();
+            Statement stmt = conn.createStatement()) {
+
+            try (ResultSet rs = stmt.executeQuery(QueryUtils.GET_STUDENTS_BY_GRADE_SQL(grade))) {
+                while (rs.next()) {
+                    students.add(new Student(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return students;
+    }
+   public static void updateCourseGrades(int student_id, int course_id) {
+        String set = "";
+        double mp1 = calculateMP(1, student_id, course_id);
+        if (mp1 / mp1 == 1) set += ", mp1 = " + mp1;
+        double mp2 = calculateMP(2, student_id, course_id);
+        if (mp2 / mp2 == 1) set += ", mp2 = " + mp2;
+        double mp3 = calculateMP(3, student_id, course_id);
+        if (mp3 / mp3 == 1) set += ", mp3 = " + mp3;
+        double mp4 = calculateMP(4, student_id, course_id);
+        if (mp4 / mp4 == 1) set += ", mp4 = " + mp4;
+        double midterm = calculateMP(5, student_id, course_id);
+        if (midterm / midterm == 1) set += ", midterm_exam = " + midterm;
+        double final_exam = calculateMP(6, student_id, course_id);
+        if (final_exam / final_exam == 1) set += ", final_exam = " + final_exam;
+        double grade = ((mp1 + mp2 + mp3 + mp4) * 0.2 + (midterm + final_exam) * 0.1);
+        if (grade / grade == 1) set += ", grade = " + grade;
+
+        
+
+        String updateCG =
+        "UPDATE course_grades " +
+            "SET " + set.substring(2, set.length()) +
+        " WHERE student_id = " + student_id + " AND course_id = " + course_id;
+
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+            
+            stmt.executeUpdate(updateCG);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static double calculateMP(int mp, int student_id, int course_id) {
+        double ptsPoss = 0;
+        double ptsEarned = 0;
+        int mpVal = 0; int midtermVal = 0; int finalVal = 0;
+        if (mp >= 1 && mp <= 4) {
+            mpVal = mp;
+            midtermVal = 0;
+            finalVal = 0;
+        } else if (mp == 5) {
+            mpVal = 0;
+            midtermVal = 1;
+            finalVal = 0;
+        } else if (mp == 6) {
+            mpVal = 0;
+            midtermVal = 0;
+            finalVal = 1;
+        }
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            try (ResultSet rs = stmt.executeQuery("SELECT * FROM assignment_grades g, assignments a WHERE g.course_id = a.course_id AND g.assignment_id = a.assignment_id AND g.student_id = " + student_id + " AND g.course_id = " + course_id + " AND a.marking_period = " + mpVal + " AND a.is_midterm = " + midtermVal + " AND a.is_final = " + finalVal)) { 
+                while (rs.next()) {
+                    ptsPoss += rs.getInt("points_possible");
+                    ptsEarned += rs.getInt("points_earned");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return (ptsEarned / ptsPoss);
+    }
+
+    public static ArrayList<Integer> getTeacherAssignmentPoints(User user, String course_no, int marking_period, int is_midterm, int is_final) {
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            try (ResultSet rs = stmt.executeQuery(QueryUtils.GET_TEACHER_ASSIGNMENTS_SQL(((Teacher) user).getTeacherId(), course_no, marking_period, is_midterm, is_final))) {
+                ArrayList<Integer> assignmentsPts = new ArrayList<Integer>();
+                while (rs.next()) {
+                    assignmentsPts.add(rs.getInt("point_value"));
+                }
+                return assignmentsPts;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
     
+    
+  
+	public static ArrayList<String> getGrades(int student_id) {
+        ArrayList<String> grades = new ArrayList<String>();
+
+        try (Connection conn = getConnection();
+            Statement stmt = conn.createStatement()) {
+
+            try (ResultSet rs = stmt.executeQuery(QueryUtils.GET_STUDENT_GRADES_SQL(student_id))) {
+                while (rs.next()) {
+                    grades.add(new String(String.valueOf(rs)));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return grades;
+    }
+
+
 
 	public static int checkCourseId(String course_no) {
         try (Connection conn = getConnection();

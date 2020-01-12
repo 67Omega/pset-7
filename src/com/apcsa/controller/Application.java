@@ -93,6 +93,55 @@ public class Application {
         }
       }
     }
+    public static boolean isInteger(String str) {
+        if (str == null) {
+            return false;
+        }
+        int length = str.length();
+        if (length == 0) {
+            return false;
+        }
+        int i = 0;
+        if (str.charAt(0) == '-') {
+            if (length == 1) {
+                return false;
+            }
+            i = 1;
+        }
+        for (; i < length; i++) {
+            char c = str.charAt(i);
+            if (c < '0' || c > '9') {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public int showTeachersCourses (ArrayList<String> courses) {
+    	String stringSelected = "";
+    	int courseSelected;
+    	System.out.println("\nChoose a course.\n");
+    	while (true) {
+    		int counter = 1;
+    		for(String i: courses) {
+    			System.out.print("[" + counter + "] ");
+    			System.out.println(i);
+    			counter++;
+        	}
+			System.out.print("\n::: ");
+			stringSelected = in.next();
+			System.out.print("\n");
+			if (!isInteger(stringSelected)) {
+				System.out.print("");
+			} else if (Integer.parseInt(stringSelected) >= counter || Integer.parseInt(stringSelected)  < 1 ) {
+				System.out.print("");
+			} else {
+				courseSelected = Integer.parseInt(stringSelected);
+    	        break;
+    	    }
+    	}
+    	return courseSelected;
+    }
 
         public void createAndShowUI() throws ClassNotFoundException, SQLException {
             System.out.print("\nHello, again, " + activeUser.getFirstName() + "!");
@@ -297,7 +346,7 @@ public class Application {
         			}
         		}
         	} else {
-        		System.out.print("\nNo students to show.\n");
+        		System.out.print("\nNo students to display.\n");
 
         	}
 		}
@@ -333,7 +382,7 @@ public class Application {
 	        			counter++;
 	        		} 
 	        	} else {
-	        		System.out.print("\nNo students in this course.");
+	        		System.out.print("\nNo students to display.");
         	}
 		}
         
@@ -341,36 +390,23 @@ public class Application {
         
         private void addGrade () throws ClassNotFoundException, SQLException {
         	ArrayList<String> assignments;
+        	//int assignment_id;
+        	//String point_value_string = "";
+        	//int point_value;
         	int is_final = 0;
         	int is_midterm = 0;
         	int marking_period;
-        	Boolean validCourse = true;
-        	Boolean realTerm;
+        	String marking_period_string = "";
+        	
+        	Boolean realTerm = true;
+        	//Boolean rerunValue = false;
         	ArrayList<String> courses = PowerSchool.checkCourseByTeacher(activeUser.getUserId()-3);
-        	int course_select;
-			do {
-        		System.out.println("\nChoose a course.\n");
-        		int counter = 1;
-        		for(String i: courses) {
-        			System.out.print("[" + counter + "] ");
-        			System.out.println(i);
-        			counter++;
-            	}
-    			System.out.print("\n::: ");
-        		
-    			course_select = in.nextInt();
-    			
-        		if (course_select <= 0 || course_select > counter) {
-        			validCourse = false;
-        			System.out.println("\nCourse not found.");
-        		}
-        	} while (!validCourse); 
-			
-			int course_id = PowerSchool.checkCourseId(courses.get(course_select - 1));
-			System.out.print(course_id);
+        	int course_id = showTeachersCourses(courses);        
 
         	do {
-        		realTerm = true;
+        		if (!realTerm) {
+        			System.out.print("\nI don't know how to categorize that.\n");
+        		}
         		System.out.print("\nChoose a marking period or exam status.\n");
         		System.out.println("\n[1] MP1 assignment.");
             	System.out.println("[2] MP2 assignment.");
@@ -380,23 +416,30 @@ public class Application {
             	System.out.println("[6] Final exam.");
             	System.out.print("\n::: ");
             	
-            	marking_period = in.nextInt();
+            	marking_period_string = in.next();
             	
-            	switch (marking_period){
-            		case 1: break;
-            		case 2: break;
-            		case 3: break;
-            		case 4: break;
-            		case 5: marking_period = -1;
+            	switch (marking_period_string){
+            		case "1": 
+                		realTerm = true; break;
+            		case "2":
+                		realTerm = true; break;
+            		case "3":
+                		realTerm = true; break;
+            		case "4": 
+                		realTerm = true; break;
+            		case "5": 
+                		realTerm = true; marking_period_string = "-1";
             		is_midterm = 1;
             		break;
-            		case 6: marking_period = -1;
+            		case "6": 
+                		realTerm = true; marking_period_string = "-1";
             		is_final = 1;
             		break;
             		default: realTerm = false;
             		break;
             	}
         	} while (!realTerm);
+        	marking_period = Integer.parseInt(marking_period_string);
         	
         		System.out.print("\nChoose an assignment.\n\n");
         		assignments = PowerSchool.checkAssignmentByTeacher(course_id, marking_period, is_midterm, is_final);
@@ -441,40 +484,23 @@ public class Application {
 
         private void addAssignment() throws ClassNotFoundException, SQLException {
         	int assignment_id;
-        	int point_value = 1;
+        	String point_value_string = "";
+        	int point_value;
         	int is_final = 0;
         	int is_midterm = 0;
         	int marking_period;
+        	String marking_period_string = "";
         	String title = "";
-        	Boolean validCourse = true;
-        	Boolean realTerm;
+        	
+        	Boolean realTerm = true;
         	Boolean rerunValue = false;
         	ArrayList<String> courses = PowerSchool.checkCourseByTeacher(activeUser.getUserId()-3);
-
-        	int course_select;
-			do {
-        		System.out.println("\nChoose a course.\n");
-        		int counter = 1;
-        		for(String i: courses) {
-        			System.out.print("[" + counter + "] ");
-        			System.out.println(i);
-        			counter++;
-            	}
-    			System.out.print("\n::: ");
-        		
-    			course_select = in.nextInt();
-    			
-        		if (course_select <= 0 || course_select > counter) {
-        			validCourse = false;
-        			System.out.println("\nCourse not found.");
-        		}
-        	} while (!validCourse); 
-			
-			int course_id = PowerSchool.checkCourseId(courses.get(course_select - 1));
-			System.out.print(course_id);
+        	int course_id = showTeachersCourses(courses);        
 
         	do {
-        		realTerm = true;
+        		if (!realTerm) {
+        			System.out.print("\nI don't know how to categorize that.\n");
+        		}
         		System.out.print("\nChoose a marking period or exam status.\n");
         		System.out.println("\n[1] MP1 assignment.");
             	System.out.println("[2] MP2 assignment.");
@@ -484,30 +510,36 @@ public class Application {
             	System.out.println("[6] Final exam.");
             	System.out.print("\n::: ");
             	
-            	marking_period = in.nextInt();
+            	marking_period_string = in.next();
             	
-            	switch (marking_period){
-            		case 1: break;
-            		case 2: break;
-            		case 3: break;
-            		case 4: break;
-            		case 5: marking_period = -1;
+            	switch (marking_period_string){
+            		case "1": 
+                		realTerm = true; break;
+            		case "2":
+                		realTerm = true; break;
+            		case "3":
+                		realTerm = true; break;
+            		case "4": 
+                		realTerm = true; break;
+            		case "5": 
+                		realTerm = true; marking_period_string = "-1";
             		is_midterm = 1;
             		break;
-            		case 6: marking_period = -1;
+            		case "6": 
+                		realTerm = true; marking_period_string = "-1";
             		is_final = 1;
             		break;
             		default: realTerm = false;
             		break;
             	}
         	} while (!realTerm);
-        	
+        	marking_period = Integer.parseInt(marking_period_string);
         	System.out.print("\nAssignment Title: ");
         	
         	do {
         		title = in.nextLine();
         	
-        	} while (title.equals(""));
+        	} while (title.isEmpty() || title.isBlank());
         	do {
         		
         	if (rerunValue) {
@@ -515,13 +547,24 @@ public class Application {
         	}
         	
         		System.out.print("Point Value: ");
-        		point_value = in.nextInt();
+        		point_value_string = in.next();
         		rerunValue = true;
-        	} while (point_value < 1 || point_value > 100);
+        		if (isInteger(point_value_string)) { 
+        			if (Integer.parseInt(point_value_string) > 0 && Integer.parseInt(point_value_string) <= 100) {
+        				point_value = Integer.parseInt(point_value_string);
+        				break;
+        			}
+        		}
+        	} while (true);
+        	
+        	System.out.print("\n");
         	
         	if (Utils.confirm(in, "Are you sure you want to create this assignment? (y/n) ")) {
                 if (in != null) {
-                	assignment_id = 1 + PowerSchool.checkLastAId(course_id);
+                	
+                		assignment_id = 1 + PowerSchool.checkLastAId(course_id);
+                	
+                	
                 	PowerSchool.addAssignment(course_id, assignment_id, marking_period, is_midterm, is_final, title, point_value);
                 	ArrayList<Student> students = PowerSchool.showStudentsCourse(PowerSchool.getCourseNo(course_id));
                 	for(Student i: students) {
@@ -534,40 +577,20 @@ public class Application {
         }
         
         private void deleteAssignment() throws ClassNotFoundException, SQLException {
-        	ArrayList<String> assignments;
         	int is_final = 0;
-        	int assignmentToDelete;
         	int is_midterm = 0;
-        	String assignment_idString = "";
         	int marking_period;
-        	boolean validAssignment = false;
-        	Boolean validCourse = true;
-        	Boolean realTerm;
+        	String marking_period_string = "";
+        	Boolean realTerm = true;
+        	
         	ArrayList<String> courses = PowerSchool.checkCourseByTeacher(activeUser.getUserId()-3);
+        	int course_id = showTeachersCourses(courses);        
 
-        	int course_select;
-			do {
-        		System.out.println("\nChoose a course.\n");
-        		int counter = 1;
-        		for(String i: courses) {
-        			System.out.print("[" + counter + "] ");
-        			System.out.println(i);
-        			counter++;
-            	}
-    			System.out.print("\n::: ");
-        		
-    			course_select = in.nextInt();
-    			
-        		if (course_select <= 0 || course_select > counter) {
-        			validCourse = false;
-        			System.out.println("\nCourse not found.");
+        	 do {
+        		if (!realTerm) {
+        			System.out.print("\nI don't know how to categorize that.\n");
         		}
-        	} while (!validCourse); 
-			
-			int course_id = PowerSchool.checkCourseId(courses.get(course_select - 1));
-
-        	do {
-        		realTerm = true;
+        		System.out.print("\nChoose a marking period or exam status.\n");
         		System.out.println("\n[1] MP1 assignment.");
             	System.out.println("[2] MP2 assignment.");
             	System.out.println("[3] MP3 assignment.");
@@ -576,24 +599,36 @@ public class Application {
             	System.out.println("[6] Final exam.");
             	System.out.print("\n::: ");
             	
-            	marking_period = in.nextInt();
+            	marking_period_string = in.next();
             	
-            	switch (marking_period){
-            		case 1: break;
-            		case 2: break;
-            		case 3: break;
-            		case 4: break;
-            		case 5: marking_period = -1;
+            	switch (marking_period_string){
+            		case "1": 
+                		realTerm = true; break;
+            		case "2":
+                		realTerm = true; break;
+            		case "3":
+                		realTerm = true; break;
+            		case "4": 
+                		realTerm = true; break;
+            		case "5": 
+                		realTerm = true; marking_period_string = "-1";
             		is_midterm = 1;
             		break;
-            		case 6: marking_period = -1;
+            		case "6": 
+                		realTerm = true; marking_period_string = "-1";
             		is_final = 1;
             		break;
             		default: realTerm = false;
             		break;
             	}
         	} while (!realTerm);
-        	do {
+        	
+        	ArrayList<String> assignments;
+			int assignmentToDelete;
+			String assignment_idString;
+			boolean validAssignment;
+			marking_period = Integer.parseInt(marking_period_string);
+			do {
         		System.out.println("\nChoose an assignment. ");
         		assignments = PowerSchool.checkAssignmentByTeacher(course_id, marking_period, is_midterm, is_final);
         		int counter = 1;
@@ -617,40 +652,27 @@ public class Application {
         }
         
         private void coursesTeacher() throws ClassNotFoundException, SQLException {
-        	boolean validCourse = true;
-        	int courseSelected;
         	ArrayList<String> courses = PowerSchool.checkCourseByTeacher(activeUser.getUserId()-3);
-
-        	do {
-        		System.out.println("\nChoose a course.\n");
-        		int counter = 1;
-        		for(String i: courses) {
-        			System.out.print("[" + counter + "] ");
-        			System.out.println(i);
-        			counter++;
-            	}
-    			System.out.print("\n::: ");
-        		
-    			courseSelected = in.nextInt();
+        	int course_id = showTeachersCourses(courses);        
     			
-        		if (courseSelected <= 0 || courseSelected > counter) {
-        			validCourse = false;
-        			System.out.println("\nCourse not found.");
-        		}
-        	} while (!validCourse); 
-        	ArrayList<Student> students = PowerSchool.showStudentsCourse(courses.get(courseSelected - 1));
-        	int counter = 1;
-        	for(Student i: students) {
-        			System.out.print("\n" + counter + ". ");
-        			System.out.print(i.getLastName() + ", ");
-        			System.out.print(i.getFirstName() + " / ");
-        			if (PowerSchool.getGrade(courseSelected, i.getStudentId()) == null) {
-        				System.out.print("--");
-        			} else {
-        				System.out.print(PowerSchool.getGrade(courseSelected, i.getStudentId()));
-        			}
-        			counter++;
-        		} 
+        	ArrayList<Student> students = PowerSchool.showStudentsCourse(courses.get(course_id - 1));
+        	
+        	if (students.size() == 0) {
+        		System.out.print("No students to display.");
+        	} else {
+	        	int counter = 1;
+	        	for(Student i: students) {
+	        			System.out.print("\n" + counter + ". ");
+	        			System.out.print(i.getLastName() + ", ");
+	        			System.out.print(i.getFirstName() + " / ");
+	        			if (PowerSchool.getGrade(course_id, i.getStudentId()) == null) {
+	        				System.out.print("--");
+	        			} else {
+	        				System.out.print(PowerSchool.getGrade(course_id, i.getStudentId()));
+	        			}
+	        			counter++;
+	        		} 
+        	}
 		}
         
         private void showDepartmentUI() throws ClassNotFoundException, SQLException {

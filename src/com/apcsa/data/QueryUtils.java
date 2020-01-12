@@ -127,12 +127,26 @@ public class QueryUtils {
     	    		"WHERE student_id = ? AND assignment_id = ? AND course_id = ?";
     public static String GET_LAST_ID = 
     		"SELECT assignment_id FROM assignments " + 	
-    				"WHERE assignment_id = ( SELECT max(assignment_id) FROM assignments) AND course_id = ?";
+    				"WHERE assignment_id = ( SELECT max(assignment_id) FROM assignments WHERE course_id = ?) AND course_id = ?";
     
     public static final String ADD_STUDENT_TO_ASSIGNMENT = 
     		"INSERT INTO assignment_grades(course_id, assignment_id, student_id, points_possible, is_graded) " +
     	    		"VALUES (?, ?, ?, ?, 0)";
-
+    public static String GET_STUDENTS_BY_GRADE_SQL(int grade) {
+        return "SELECT * FROM students " +
+        "WHERE grade_level = " + String.valueOf(grade) + " " +
+        "ORDER BY student_id";//"ORDER BY last_name, first_name";
+    }
+    public static String GET_TEACHER_ASSIGNMENTS_SQL(int teacher_id, String course_no, int marking_period, int is_midterm, int is_final) {
+        return "SELECT * FROM assignments a, courses c, teachers t " +
+        "WHERE c.teacher_id = t.teacher_id AND c.course_id = a.course_id " +
+        "AND t.teacher_id = " + teacher_id + " " +
+        "AND a.course_id = " + PowerSchool.checkCourseId(course_no) + " " +
+        "AND a.marking_period = " + marking_period + " " +
+        "AND a.is_midterm = " + is_midterm + " " +
+        "AND a.is_final = " + is_final + " " +
+        "ORDER BY a.assignment_id";
+    }
 	public static final String DEL_ASSIGNMENT_GRADE = 
 			"DELETE FROM assignment_grades WHERE assignment_id = ? AND course_id = ?";
     
@@ -146,7 +160,9 @@ public class QueryUtils {
     				"INNER JOIN students s " +
     				"ON s.student_id = a.student_id " +
     				"WHERE (a.assignment_id = ? AND s.student_id = ?)";
-
+    public static String STUDENT_COURSE_GRADE = 
+    		"SELECT ifnull(grade, -1) AS grade FROM course_grades "
+    		+ "WHERE course_id = ? AND student_id = ?";
     
     public static String SHOW_COURSE_GRADE =
     		"SELECT c.title, g.grade " +
@@ -154,11 +170,31 @@ public class QueryUtils {
     				"INNER JOIN  course_grades g " +
     				"ON c.course_id = g.course_id " +
     				"WHERE g.student_Id = ?";
-    
+    public static String GET_COURSES_SQL(int courseId) {
+        return "SELECT * FROM courses " + 
+        "WHERE course_id = " + String.valueOf(courseId);
+    }
+    public static String GET_STUDENT_BY_STUDENT_ID_SQL(int studentId) {
+        return "SELECT * FROM students " + 
+        "WHERE student_id = " + String.valueOf(studentId) + " " +
+        "ORDER BY last_name, first_name";
+    }
+
     public static String GET_STUDENT_ID =
     		"SELECT student_id FROM students " +
     				"WHERE user_id = ?";
-    
+    public static String UPDATE_CLASS_RANK_SQL(int studentId, int classRank) {
+        return 
+        "UPDATE students " + 
+            "SET class_rank = " + String.valueOf(classRank) + " " +
+        "WHERE student_id = " + String.valueOf(studentId);
+
+    }
+    public static String GET_STUDENT_GRADES_SQL(int studentId) {
+        return "SELECT grade FROM course_grades " +
+        "WHERE student_id = " + String.valueOf(studentId) + " " +
+        "ORDER BY course_id";
+    } 
     public static String SHOW_ASSIGNMENT_GRADE =
     		"SELECT a.title, g.points_earned, a.point_value " +
     				"FROM assignments AS a " +
@@ -166,5 +202,20 @@ public class QueryUtils {
     				"ON g.assignment_id = a.assignment_id AND g.course_id = a.course_id " +
     				"WHERE g.student_id = ? AND g.course_id = ? AND a.marking_period = ? " +
     				"AND is_midterm = ? AND is_final = ?";
+    public static final String UPDATE_COURSE_GRADE_STUDENT = "UPDATE course_grades SET mp1 = ?, mp2 = ?, midterm_exam = ?, mp3 = ?, mp4 = ?, final_exam = ?, grade = ? "
+    		+ "WHERE course_id = ? AND student_id = ?";
+    public static String ENTER_GRADE_SQL(int course_id, int assignment_id, int student_id, int points_earned, int points_possible) {
+        return "INSERT INTO assignment_grades " +
+        "(course_id, assignment_id, student_id, points_earned, points_possible, is_graded) " +
+        "VALUES (" + course_id + ", " + assignment_id + ", " + student_id + ", " +
+                    points_earned + ", " + points_possible + ", " + 1 + ")";
+    }
+    public static String GET_STUDENT_GRADES_ALL_SQL(int studentId) {
+        return "SELECT * FROM course_grades " + 
+        "WHERE student_id = " + String.valueOf(studentId) + " " + 
+        "ORDER BY course_id";
+    }
+    
 }
+
 
