@@ -503,7 +503,7 @@ public class PowerSchool {
         return assignments;
     }
     
-    public static void resetPassword(String username) {
+    public static Boolean resetPassword(String username) {
         //
         // get a connection to the database
         // create a prepared statement (both of thses should go in a try-with-resources statement)
@@ -524,12 +524,15 @@ public class PowerSchool {
     			
                 if (stmt.executeUpdate() == 1) {
                     conn.commit();
+         
                 } else {
                     conn.rollback();
+                    return false;
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+    	return true;
     }
     
     /**

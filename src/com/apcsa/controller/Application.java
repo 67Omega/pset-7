@@ -28,12 +28,12 @@ import com.apcsa.controller.Utils;
 public class Application {
     private Scanner in;
     private User activeUser;
-    enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
-    enum StudentAction { COURSEGRADE, ASSIGNMENTGRADE, PASSWORD, LOGOUT }
-    enum AdminAction { FACULTY, FACULTY_BY_DEP, STUDENT, STUDENT_GRADE, STUDENT_COURSE, PASSWORD, LOGOUT }
-    enum DeptList { CS, ENGLISH, HISTORY, MATH, PHYS_ED, SCIENCE }
-    enum GradeList { FRESHMEN, SOPHMORE, JUNIOR, SENIOR }
-    enum TeacherAction { ENROLLMENT, ADD, DELETE, GRADE, PASSWORD, LOGOUT }
+    enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN, NULL }
+    enum StudentAction { COURSEGRADE, ASSIGNMENTGRADE, PASSWORD, LOGOUT, NULL }
+    enum AdminAction { FACULTY, FACULTY_BY_DEP, STUDENT, STUDENT_GRADE, STUDENT_COURSE, PASSWORD, LOGOUT, NULL }
+    enum DeptList { CS, ENGLISH, HISTORY, MATH, PHYS_ED, SCIENCE, NULL }
+    enum GradeList { FRESHMAN, SOPHMORE, JUNIOR, SENIOR, NULL }
+    enum TeacherAction { ENROLLMENT, ADD, DELETE, GRADE, PASSWORD, LOGOUT, NULL }
     /**
      * Creates an instance of the Application class, which is responsible for interacting
      * with the user via the command line interface.
@@ -117,6 +117,7 @@ public class Application {
                     case DATABASE: factoryReset(); break;
                     case LOGOUT: logout(); break;
                     case SHUTDOWN: shutdown(); break;
+                    case NULL: System.out.println("\nInvalid selection."); showRootUI(); break;
                     default: System.out.println("\nInvalid selection."); break;
                 }
             }
@@ -129,6 +130,7 @@ public class Application {
                     case ASSIGNMENTGRADE: viewAssignmentGrades(); break;
                     case PASSWORD: changePassword(); break;
                     case LOGOUT: logout(); break;
+                    case NULL: System.out.println("\nInvalid selection."); showStudentUI();
                     default: System.out.println("\nInvalid selection."); break;
                 }
             }
@@ -145,6 +147,7 @@ public class Application {
                     case GRADE: addGrade(); break;
                     case PASSWORD: changePassword(); break;
                     case LOGOUT: logout(); break;
+                    case NULL: System.out.println("\nInvalid selection."); showTeacherUI();
                     default: System.out.println("\nInvalid selection."); break;
                 }
             }
@@ -160,6 +163,7 @@ public class Application {
                     case STUDENT_COURSE: studentCourse(); break;
                     case PASSWORD: changePassword(); break;
                     case LOGOUT: logout(); break;
+                    case NULL: System.out.println("\nInvalid selection."); showAdministratorUI();
                     default: System.out.println("\nInvalid selection."); break;
                 }
             }
@@ -169,7 +173,7 @@ public class Application {
         	ArrayList<Student> students = PowerSchool.showStudents();
         	int counter = 1;
         	for(Student i: students) {
-        		System.out.print("\n" + counter + ".s ");
+        		System.out.print("\n" + counter + ". ");
         		System.out.print(i.getLastName() + ", ");
         		System.out.print(i.getFirstName() + " / ");
         		System.out.print(i.getGraduationYear());
@@ -178,18 +182,18 @@ public class Application {
         }
         
         private GradeList displayGrades() {
-        	System.out.println("\n[1] Freshmen.");
+        	System.out.println("\n[1] Freshman.");
             System.out.println("[2] Sophmore.");
             System.out.println("[3] Junior.");
             System.out.println("[4] Senior.");
             System.out.print("\n::: ");
             
             switch (Utils.getInt(in, -1)) {
-            	case 1: return GradeList.FRESHMEN;
+            	case 1: return GradeList.FRESHMAN;
             	case 2: return GradeList.SOPHMORE;
             	case 3: return GradeList.JUNIOR;
             	case 4: return GradeList.SENIOR;
-            default: return null;
+            default: return GradeList.NULL;
         }
         }
         
@@ -270,11 +274,11 @@ public class Application {
         private void showGradeUI() throws ClassNotFoundException, SQLException {
             
             switch (displayGrades()) {
-                case FRESHMEN: studentsGrade(1); break;
+                case FRESHMAN: studentsGrade(1); break;
                 case SOPHMORE: studentsGrade(2); break;
                 case JUNIOR: studentsGrade(3); break;
                 case SENIOR: studentsGrade(4); break;
-                default: System.out.println("\nInvalid selection."); break;
+                default: showGradeUI(); break;
             }
         }
         
@@ -282,15 +286,20 @@ public class Application {
         	gradeLevel += 8;
         	ArrayList<Student> students = PowerSchool.showStudents();
         	int counter = 1;
-        	for(Student i: students) {
-        		if (i.getGradeLevel() == gradeLevel) {
-        			System.out.print("\n" + counter + ". ");
-        			System.out.print(i.getLastName() + ", ");
-        			System.out.print(i.getFirstName() + " / #");
-        			System.out.print(i.getClassRank());
-        			counter++;
+        	if (students.size() == 0) {
+        		for(Student i: students) {
+        			if (i.getGradeLevel() == gradeLevel) {
+        				System.out.print("\n" + counter + ". ");
+        				System.out.print(i.getLastName() + ", ");
+        				System.out.print(i.getFirstName() + " / #");
+        				System.out.print(i.getClassRank());
+        				counter++;
+        			}
         		}
-        	}  
+        	} else {
+        		System.out.print("\nNo students to show.\n");
+
+        	}
 		}
         
         private void studentCourse() throws ClassNotFoundException, SQLException {
@@ -311,17 +320,21 @@ public class Application {
         	} while (!realCourse); 
         	ArrayList<Student> students = PowerSchool.showStudentsCourse(course_no);
         	int counter = 1;
-        	for(Student i: students) {
-        			System.out.print("\n" + counter + ". ");
-        			System.out.print(i.getLastName() + ", ");
-        			System.out.print(i.getFirstName() + " / ");
-        			if (i.getGpa() == -1) {
-        				System.out.print("--");
-        			} else {
-        				System.out.print(i.getGpa());
-        			}
-        			counter++;
-        		}  
+        	if (students.size() != 0) {
+	        	for(Student i: students) {
+	        			System.out.print("\n" + counter + ". ");
+	        			System.out.print(i.getLastName() + ", ");
+	        			System.out.print(i.getFirstName() + " / ");
+	        			if (i.getGpa() == -1) {
+	        				System.out.print("--");
+	        			} else {
+	        				System.out.print(i.getGpa());
+	        			}
+	        			counter++;
+	        		} 
+	        	} else {
+	        		System.out.print("\nNo students in this course.");
+        	}
 		}
         
         
@@ -506,7 +519,7 @@ public class Application {
         		rerunValue = true;
         	} while (point_value < 1 || point_value > 100);
         	
-        	if (Utils.confirm(in, "\nAre you sure you want to create this assignment? (y/n) ")) {
+        	if (Utils.confirm(in, "Are you sure you want to create this assignment? (y/n) ")) {
                 if (in != null) {
                 	assignment_id = 1 + PowerSchool.checkLastAId(course_id);
                 	PowerSchool.addAssignment(course_id, assignment_id, marking_period, is_midterm, is_final, title, point_value);
@@ -593,7 +606,7 @@ public class Application {
         		assignment_idString = assignments.get(assignmentToDelete * 3 - 1);
         		validAssignment = (assignmentToDelete <= counter && assignmentToDelete > 0);
         	} while (!validAssignment);
-        	if (Utils.confirm(in, "\nAre you sure you want to delete this assignment? (y/n) ")) {
+        	if (Utils.confirm(in, "Are you sure you want to delete this assignment? (y/n) ")) {
                 if (in != null) {
                 	PowerSchool.delAssignment(Integer.parseInt(assignment_idString), course_id);
                 	PowerSchool.delAssignmentGrade(Integer.parseInt(assignment_idString), course_id);
@@ -649,7 +662,7 @@ public class Application {
                     case MATH: selectDepartment(4); break;
                     case PHYS_ED: selectDepartment(5); break;
                     case SCIENCE: selectDepartment(6); break;
-                    default: System.out.println("\nInvalid selection."); break;
+                    case NULL: showDepartmentUI(); break;
                 }
         }
         /*
@@ -693,12 +706,14 @@ public class Application {
             System.out.println("[4] Shutdown.");
             System.out.print("\n::: ");
             
+            
+            
             switch (Utils.getInt(in, -1)) {
                 case 1: return RootAction.PASSWORD;
                 case 2: return RootAction.DATABASE;
                 case 3: return RootAction.LOGOUT;
                 case 4: return RootAction.SHUTDOWN;
-                default: return null;
+                default: return RootAction.NULL;
             }
          }
 		
@@ -720,7 +735,7 @@ public class Application {
                 case 4: return TeacherAction.GRADE;
                 case 5: return TeacherAction.PASSWORD;
                 case 6: return TeacherAction.LOGOUT;
-                default: return null;
+                default: return TeacherAction.NULL;
             }
          }
 		
@@ -740,7 +755,7 @@ public class Application {
                 case 2: return StudentAction.ASSIGNMENTGRADE;
                 case 3: return StudentAction.PASSWORD;
                 case 4: return StudentAction.LOGOUT;
-                default: return null;
+                default: return StudentAction.NULL;
             }
          }
         
@@ -764,7 +779,7 @@ public class Application {
                 case 5: return AdminAction.STUDENT_COURSE;
                 case 6: return AdminAction.PASSWORD;
                 case 7: return AdminAction.LOGOUT;
-            default: return null;
+                default: return AdminAction.NULL;
             }
         }
         
@@ -784,7 +799,7 @@ public class Application {
             	case 4: return DeptList.MATH;
             	case 5: return DeptList.PHYS_ED;
             	case 6: return DeptList.SCIENCE;
-            default: return null;
+            	default: return DeptList.NULL;
         }
         }
         /*
@@ -830,17 +845,15 @@ public class Application {
             
             System.out.print("\nUsername: ");
             String usernameForReset = in.next();
-            
-            String response = "c";
-            System.out.print("\nAre you sure you want to reset the password for " + usernameForReset + "? (y/n) ");
-            response = in.next();
-            if (response.equals("y")) {
+           
+            if (Utils.confirm(in, "Are you sure you want to reset the password for " + usernameForReset + "? (y/n) ")) {
             	PowerSchool.resetPassword(usernameForReset);
-            	System.out.print("\nSuccessfully reset password for " + usernameForReset + ".");
-            } else if (response.equals("n")) {
-            } else {
-            	System.out.print("Invalid input.");
-            }
+            	if (PowerSchool.resetPassword(usernameForReset)) {
+            		System.out.print("\nSuccessfully reset password for " + usernameForReset + ".");
+            	} else {
+            		System.out.print("\nNo such user...");
+            	}
+            } 
             // ask root user to confirm intent to reset the password for that username
             //
             // if confirmed...
@@ -854,23 +867,10 @@ public class Application {
          */
 
         private void factoryReset() {
-            //
-            // ask root user to confirm intent to reset the database
-            //
-            // if confirmed...
-            //      call database initialize method with parameter of true
-            //      print success message
-            //
-        	String response = "c";
-            System.out.print("\nAre you sure you want to reset all settings and data? (y/n) ");
-            response = in.next();
-            if (response.equals("y")) {
+            if (Utils.confirm(in, "Are you sure you want to reset all settings and data? (y/n) ")) {
             	PowerSchool.initialize(true);
             	System.out.println("Successfully reset database.");
-            } else if (response.equals("n")) {
-            } else {
-            	System.out.println("Invalid input.");
-            }
+            } 
         }
         
         /*
@@ -878,16 +878,10 @@ public class Application {
          */
 
         private void logout() {
-            String response = "c";
-            System.out.print("\nAre you sure? (y/n) ");
-            response = in.next();
-            if (response.equals("y")) {
+        	System.out.print("\n");
+            if (Utils.confirm(in, "Are you sure? (y/n) ")) {
             	startup();
-            } else if (response.equals("n")) {
-            	
-            } else {
-            	System.out.println("Invalid input.");
-            }
+            } 
         }
         
         
