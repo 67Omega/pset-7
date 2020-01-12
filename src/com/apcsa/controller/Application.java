@@ -393,6 +393,12 @@ public class Application {
         
         private void addGrade () throws ClassNotFoundException, SQLException {
         	ArrayList<String> assignments;
+        	int realZero1 = -1;
+        	int realZero2 = -1;
+        	int realZero3 = -1;
+        	int realZero4 = -1;
+        	int realZero5 = -1;
+        	int realZero6 = -1;
         	Float mp1;
         	Float mp2;
         	Float mp3;
@@ -476,17 +482,32 @@ public class Application {
         		System.out.print("\nAssignment: " + assignments.get(assignmentSelected * 3 - 3) + "\n");
         		System.out.print("Student: " + students.get(studentSelected - 1).getLastName() + ", " + students.get(studentSelected - 1).getFirstName() + "\n");
         		System.out.print("Current Grade: ");
-        		if (PowerSchool.getAssignmentGrade(Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), students.get(studentSelected - 1).getStudentId()) == null) {
+        		if (PowerSchool.getAssignmentGrade(Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), students.get(studentSelected - 1).getStudentId(), course_id) == null) {
     				System.out.print("--\n");
     			} else {
-    				System.out.print(PowerSchool.getAssignmentGrade(Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), students.get(studentSelected - 1).getStudentId()) + "\n");
+    				System.out.print(PowerSchool.getAssignmentGrade(Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), students.get(studentSelected - 1).getStudentId(), course_id) + "\n");
     			}
         		
         		System.out.print("\nNew Grade: ");
         		int points_earned = in.nextInt();        
+        			switch (mp) {
+        			case "mp1": realZero1 = 1;
+        				break;
+        			case "mp2": realZero2 = 1;
+    				break;
+        			case "mp3": realZero3 = 1;
+    				break;
+        			case "mp4": realZero4 = 1;
+    				break;
+        			case "mid": realZero5 = 1;
+    				break;
+        			case "fin": realZero6 = 1;
+    				break;
+
+        			
+        			}
         	
         	if (Utils.confirm(in, "\nAre you sure you want to enter this grade? (y/n) ")) {
-                if (in != null) {
                 	PowerSchool.gradeAssignment(points_earned, students.get(studentSelected - 1).getStudentId(), Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), course_id);
 
                 	
@@ -507,13 +528,13 @@ public class Application {
                 	mp4 = studentsMPGrades.get(3);
                 	mid = studentsMPGrades.get(4);
                 	fin = studentsMPGrades.get(5);
-                	PowerSchool.calculateAndSetCourseGrade (mp1, mp2, mp3, mp4, fin, mid, students.get(studentSelected - 1).getStudentId(), course_id);
                 	
                 	PowerSchool.updateStudentMPGrade(mp, marking_period_grade, students.get(studentSelected - 1).getStudentId(), course_id);
+                	PowerSchool.calculateAndSetCourseGrade (mp1, mp2, mp3, mp4, fin, mid, students.get(studentSelected - 1).getStudentId(), course_id, realZero1, realZero2, realZero3, realZero4, realZero5, realZero6);
                 	System.out.print("\nSuccessfully entered.");
                 }
         	}        	
-        }
+        
 
         
         private void addAssignment() throws ClassNotFoundException, SQLException {
@@ -611,6 +632,12 @@ public class Application {
         }
         
         private void deleteAssignment() throws ClassNotFoundException, SQLException {
+        	int realZero1 = 1;
+        	int realZero2 = 1;
+        	int realZero3 = 1;
+        	int realZero4 = 1;
+        	int realZero5 = 1;
+        	int realZero6 = 1;
         	float sum = (float)0;
         	int is_final = 0;
         	int is_midterm = 0;
@@ -701,7 +728,22 @@ public class Application {
                     	mp4 = studentsMPGrades.get(3);
                     	mid = studentsMPGrades.get(4);
                     	fin = studentsMPGrades.get(5);
-                    	PowerSchool.calculateAndSetCourseGrade (mp1, mp2, mp3, mp4, fin, mid, u, course_id);
+                    	
+                    	if (studentsMPGrades.get(0) == null) {
+                    		realZero1 = -1;
+                    	}
+                    	if (studentsMPGrades.get(1) == null) {
+                    		realZero2 = -1;
+                    	}if (studentsMPGrades.get(2) == null) {
+                    		realZero3 = -1;
+                    	}if (studentsMPGrades.get(3) == null) {
+                    		realZero4 = -1;
+                    	}if (studentsMPGrades.get(4) == null) {
+                    		realZero5 = -1;
+                    	}if (studentsMPGrades.get(5) == null) {
+                    		realZero6 = -1;
+                    	}
+                    	PowerSchool.calculateAndSetCourseGrade(mp1, mp2, mp3, mp4, fin, mid, u, course_id, realZero1,realZero2,realZero3,realZero4,realZero5,realZero6);
                     
 						for(int i = 0; i < otherAssignments.size(); i++) {
                     		

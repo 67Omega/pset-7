@@ -327,13 +327,38 @@ public class PowerSchool {
             }
             return assignmentGrades;
 	    }
-    public static int calculateAndSetCourseGrade (float mp1, float mp2, float mp3, float mp4, float final_exam, float midterm_exam, int student_id, int course_id) {
+    public static int calculateAndSetCourseGrade (float mp1, float mp2, float mp3, float mp4, float final_exam, float midterm_exam, int student_id, int course_id, int realZero1, int realZero2, int realZero3,
+	int realZero4,
+	int realZero5,
+	int realZero6) {
     	try(Connection conn = getConnection();
     			PreparedStatement stmt = conn.prepareStatement(QueryUtils.UPDATE_COURSE_GRADE)) {
     			conn.setAutoCommit(false);
+    			float total_weight = 0;
+    			if (realZero1 == 1) {
+    				total_weight += 0.2;
+    			}
+    			if (realZero2 == 1) {
+    				total_weight += 0.2;
+    			}
     			
-    			float grade = (float) ((mp1 + mp2 + mp3 + mp4) * 0.2 + (midterm_exam + final_exam) * 0.1);
-    			System.out.println("new grade is" + grade);
+    			if (realZero3 == 1) {
+    				total_weight += 0.2;
+    			}
+    			
+    			if (realZero4 == 1) {
+    				total_weight += 0.2;
+    			}
+    			
+    			if (realZero5 == 1) {
+    				total_weight += 0.1;
+    			}
+    			if (realZero6 == 1) {
+    				total_weight += 0.1;
+    			}
+    			
+    			System.out.print(mp1 +" "+ mp2 +" "+ midterm_exam +" "+ mp3 +" "+ mp4 + " " + final_exam +" "+ student_id + " " + course_id);
+    			float grade = (float) (((mp1 + mp2 + mp3 + mp4) * 0.2 + (midterm_exam + final_exam) * 0.1)/total_weight);
     			stmt.setFloat(1, grade);
     			stmt.setInt(2, student_id);
     			stmt.setInt(3, course_id);
@@ -542,12 +567,13 @@ public class PowerSchool {
         return 0;
     }
     
-    public static String getAssignmentGrade(int assignment_id, int student_id) {
+    public static String getAssignmentGrade(int assignment_id, int student_id, int course_id) {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(QueryUtils.SHOW_GRADE)) {
 
             stmt.setInt(1, assignment_id);
             stmt.setInt(2, student_id);
+            stmt.setInt(3, course_id);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {

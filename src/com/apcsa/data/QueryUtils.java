@@ -189,7 +189,7 @@ public class QueryUtils {
     		"SELECT a.points_earned FROM assignment_grades a " +
     				"INNER JOIN students s " +
     				"ON s.student_id = a.student_id " +
-    				"WHERE (a.assignment_id = ? AND s.student_id = ?)";
+    				"WHERE a.assignment_id = ? AND s.student_id = ? AND a.course_id = ?";
     public static String STUDENT_COURSE_GRADE = 
     		"SELECT ifnull(grade, -1) AS grade FROM course_grades "
     		+ "WHERE course_id = ? AND student_id = ?";
