@@ -120,6 +120,7 @@ public class Application {
     public int showTeachersCourses (ArrayList<String> courses) {
     	String stringSelected = "";
     	int courseSelected;
+    	int inSelect;
     	System.out.println("\nChoose a course.\n");
     	while (true) {
     		int counter = 1;
@@ -136,7 +137,8 @@ public class Application {
 			} else if (Integer.parseInt(stringSelected) >= counter || Integer.parseInt(stringSelected)  < 1 ) {
 				System.out.print("");
 			} else {
-				courseSelected = Integer.parseInt(stringSelected);
+				inSelect = Integer.parseInt(stringSelected);
+				courseSelected = PowerSchool.checkCourseId(courses.get(inSelect - 1));
     	        break;
     	    }
     	}
@@ -351,6 +353,7 @@ public class Application {
         	}
 		}
         
+
         private void studentCourse() throws ClassNotFoundException, SQLException {
         	Boolean realCourse = false;
         	String course_no = "";
@@ -390,6 +393,12 @@ public class Application {
         
         private void addGrade () throws ClassNotFoundException, SQLException {
         	ArrayList<String> assignments;
+        	Float mp1;
+        	Float mp2;
+        	Float mp3;
+        	Float mp4;
+        	Float mid;
+        	Float fin;
         	//int assignment_id;
         	//String point_value_string = "";
         	//int point_value;
@@ -397,8 +406,9 @@ public class Application {
         	int is_midterm = 0;
         	int marking_period;
         	String marking_period_string = "";
-        	
+        	String mp = "";
         	Boolean realTerm = true;
+        	Float sum = (float) 0;
         	//Boolean rerunValue = false;
         	ArrayList<String> courses = PowerSchool.checkCourseByTeacher(activeUser.getUserId()-3);
         	int course_id = showTeachersCourses(courses);        
@@ -420,20 +430,21 @@ public class Application {
             	
             	switch (marking_period_string){
             		case "1": 
-                		realTerm = true; break;
+                		realTerm = true; mp = "mp1"; break;
             		case "2":
-                		realTerm = true; break;
+                		realTerm = true; mp = "mp2"; break;
             		case "3":
-                		realTerm = true; break;
+                		realTerm = true; mp = "mp3";  break;
             		case "4": 
-                		realTerm = true; break;
+                		realTerm = true; mp = "mp4";  break;
             		case "5": 
                 		realTerm = true; marking_period_string = "-1";
-            		is_midterm = 1;
+            		is_midterm = 1; mp = "midterm_exam";
             		break;
             		case "6": 
                 		realTerm = true; marking_period_string = "-1";
             		is_final = 1;
+            		mp = "final_exam";
             		break;
             		default: realTerm = false;
             		break;
@@ -442,7 +453,7 @@ public class Application {
         	marking_period = Integer.parseInt(marking_period_string);
         	
         		System.out.print("\nChoose an assignment.\n\n");
-        		assignments = PowerSchool.checkAssignmentByTeacher(course_id, marking_period, is_midterm, is_final);
+        		assignments = PowerSchool.checkAssignmentByTeacher(course_id, marking_period, is_midterm, is_final, activeUser.getUserId()-3);
         		int counter = 1;
         		for (int i = 0; i < assignments.size(); i += 3) {
         			System.out.println("[" + counter + "]" + " " + assignments.get(i) + " (" + assignments.get(i + 1) + " pts)");
@@ -462,13 +473,13 @@ public class Application {
             		} 
             	System.out.print("\n\n::: ");
         		int studentSelected = in.nextInt();
-        		System.out.print("\nAssignment: " + assignments.get(assignmentSelected - 1) + "\n");
+        		System.out.print("\nAssignment: " + assignments.get(assignmentSelected * 3 - 3) + "\n");
         		System.out.print("Student: " + students.get(studentSelected - 1).getLastName() + ", " + students.get(studentSelected - 1).getFirstName() + "\n");
         		System.out.print("Current Grade: ");
-        		if (PowerSchool.getAssignmentGrade(Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), (studentSelected - 1)) == null) {
+        		if (PowerSchool.getAssignmentGrade(Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), students.get(studentSelected - 1).getStudentId()) == null) {
     				System.out.print("--\n");
     			} else {
-    				System.out.print(PowerSchool.getAssignmentGrade(Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), studentSelected - 1) + "\n");
+    				System.out.print(PowerSchool.getAssignmentGrade(Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), students.get(studentSelected - 1).getStudentId()) + "\n");
     			}
         		
         		System.out.print("\nNew Grade: ");
@@ -477,11 +488,34 @@ public class Application {
         	if (Utils.confirm(in, "\nAre you sure you want to enter this grade? (y/n) ")) {
                 if (in != null) {
                 	PowerSchool.gradeAssignment(points_earned, students.get(studentSelected - 1).getStudentId(), Integer.parseInt(assignments.get(assignmentSelected * 3 - 1)), course_id);
+
+                	
+                	ArrayList<Float> otherAssignments = PowerSchool.calculateMPGrade(marking_period, is_midterm, is_final, students.get(studentSelected - 1).getStudentId(), course_id);
+                	
+             
+                	
+                	for(int i = 0; i < otherAssignments.size(); i++) {
+                		
+                        sum = sum + otherAssignments.get(i);
+                	}
+                    float marking_period_grade = sum / otherAssignments.size();
+   
+                    ArrayList<Float> studentsMPGrades = PowerSchool.enumStudentCourseGrade(course_id, students.get(studentSelected - 1).getStudentId());
+                	mp1 = studentsMPGrades.get(0);
+                	mp2 = studentsMPGrades.get(1);
+                	mp3 = studentsMPGrades.get(2);
+                	mp4 = studentsMPGrades.get(3);
+                	mid = studentsMPGrades.get(4);
+                	fin = studentsMPGrades.get(5);
+                	PowerSchool.calculateAndSetCourseGrade (mp1, mp2, mp3, mp4, fin, mid, students.get(studentSelected - 1).getStudentId(), course_id);
+                	
+                	PowerSchool.updateStudentMPGrade(mp, marking_period_grade, students.get(studentSelected - 1).getStudentId(), course_id);
                 	System.out.print("\nSuccessfully entered.");
                 }
         	}        	
         }
 
+        
         private void addAssignment() throws ClassNotFoundException, SQLException {
         	int assignment_id;
         	String point_value_string = "";
@@ -577,9 +611,18 @@ public class Application {
         }
         
         private void deleteAssignment() throws ClassNotFoundException, SQLException {
+        	float sum = (float)0;
         	int is_final = 0;
         	int is_midterm = 0;
         	int marking_period;
+        	Float mp1;
+        	Float mp2;
+        	Float mp3;
+        	Float mp4;
+        	Float mid;
+        	Float fin;
+        	
+        	String mp = "";
         	String marking_period_string = "";
         	Boolean realTerm = true;
         	
@@ -602,27 +645,28 @@ public class Application {
             	marking_period_string = in.next();
             	
             	switch (marking_period_string){
-            		case "1": 
-                		realTerm = true; break;
-            		case "2":
-                		realTerm = true; break;
-            		case "3":
-                		realTerm = true; break;
-            		case "4": 
-                		realTerm = true; break;
-            		case "5": 
-                		realTerm = true; marking_period_string = "-1";
-            		is_midterm = 1;
-            		break;
-            		case "6": 
-                		realTerm = true; marking_period_string = "-1";
-            		is_final = 1;
-            		break;
-            		default: realTerm = false;
-            		break;
-            	}
-        	} while (!realTerm);
-        	
+        		case "1": 
+            		realTerm = true; mp = "mp1"; break;
+        		case "2":
+            		realTerm = true; mp = "mp2"; break;
+        		case "3":
+            		realTerm = true; mp = "mp3";  break;
+        		case "4": 
+            		realTerm = true; mp = "mp4";  break;
+        		case "5": 
+            		realTerm = true; marking_period_string = "-1";
+        		is_midterm = 1; mp = "midterm_exam";
+        		break;
+        		case "6": 
+            		realTerm = true; marking_period_string = "-1";
+        		is_final = 1;
+        		mp = "final_exam";
+        		break;
+        		default: realTerm = false;
+        		break;
+        	}
+    	} while (!realTerm);
+    	marking_period = Integer.parseInt(marking_period_string);
         	ArrayList<String> assignments;
 			int assignmentToDelete;
 			String assignment_idString;
@@ -630,7 +674,7 @@ public class Application {
 			marking_period = Integer.parseInt(marking_period_string);
 			do {
         		System.out.println("\nChoose an assignment. ");
-        		assignments = PowerSchool.checkAssignmentByTeacher(course_id, marking_period, is_midterm, is_final);
+        		assignments = PowerSchool.checkAssignmentByTeacher(course_id, marking_period, is_midterm, is_final, activeUser.getUserId()-3);
         		int counter = 1;
         		for (int i = 0; i < assignments.size(); i += 3) {
         			System.out.println("[" + counter + "]" + " " + assignments.get(i) + " (" + assignments.get(i + 1) + " pts)");
@@ -644,7 +688,32 @@ public class Application {
         	if (Utils.confirm(in, "Are you sure you want to delete this assignment? (y/n) ")) {
                 if (in != null) {
                 	PowerSchool.delAssignment(Integer.parseInt(assignment_idString), course_id);
+                	ArrayList<Integer> students = PowerSchool.showStudentsAs(Integer.parseInt(assignment_idString), course_id);
                 	PowerSchool.delAssignmentGrade(Integer.parseInt(assignment_idString), course_id);
+                	
+
+                	for (Integer u: students) {
+                		ArrayList<Float> otherAssignments = PowerSchool.calculateMPGrade(marking_period, is_midterm, is_final, u, course_id);
+                    	ArrayList<Float> studentsMPGrades = PowerSchool.enumStudentCourseGrade(course_id, u);
+                    	mp1 = studentsMPGrades.get(0);
+                    	mp2 = studentsMPGrades.get(1);
+                    	mp3 = studentsMPGrades.get(2);
+                    	mp4 = studentsMPGrades.get(3);
+                    	mid = studentsMPGrades.get(4);
+                    	fin = studentsMPGrades.get(5);
+                    	PowerSchool.calculateAndSetCourseGrade (mp1, mp2, mp3, mp4, fin, mid, u, course_id);
+                    
+						for(int i = 0; i < otherAssignments.size(); i++) {
+                    		
+                            sum  = sum + otherAssignments.get(i);
+                    	}
+                        float marking_period_grade = sum / otherAssignments.size();
+       
+                        sum = 0;
+                    	
+                    	PowerSchool.updateStudentMPGrade(mp, marking_period_grade, u, course_id);
+                	}
+                	
                 	
                 	System.out.print("\nSuccessfully deleted " + assignments.get(assignmentToDelete * 3 - 3) + ".");
                 }

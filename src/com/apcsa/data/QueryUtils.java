@@ -124,7 +124,7 @@ public class QueryUtils {
     public static String ADD_GRADE = 
     		"UPDATE assignment_grades " +
     	    		"SET points_earned = ?, is_graded = 1 " +
-    	    		"WHERE student_id = ? AND assignment_id = ? AND course_id = ?";
+    	    		"WHERE (student_id = ? AND assignment_id = ? AND course_id = ?)";
     public static String GET_LAST_ID = 
     		"SELECT assignment_id FROM assignments " + 	
     				"WHERE assignment_id = ( SELECT max(assignment_id) FROM assignments WHERE course_id = ?) AND course_id = ?";
@@ -155,6 +155,36 @@ public class QueryUtils {
     				"INNER JOIN assignment_grades a " +
     				"ON s.student_id  = a.student_id " +
     				"WHERE a.assignment_id = ? AND a.course_id = ?";
+    public static String GET_STUDENT_BY_ID =
+    		"SELECT s.student_id FROM students s " +
+    				"INNER JOIN assignment_grades a " +
+    				"ON s.student_id  = a.student_id " +
+    				"WHERE a.assignment_id = ? AND a.course_id = ?";
+    
+    public static String STUDENT_BY_GPA = 
+    		"SELECT * FROM students " + 
+    		"ORDER BY gpa";
+    public static String UPDATE_COURSE_GRADE(String mp) {
+        return "UPDATE course_grades " +
+        "SET "+ mp +" =  ? " +
+        "WHERE student_id = ? AND course_id = ?";
+    }
+    public static String UPDATE_COURSE_GRADE =
+        "UPDATE course_grades " +
+        "SET grade =  ? " +
+        "WHERE student_id = ? AND course_id = ?";
+        
+    
+    public static String GET_POINTS_POSSIBLE = 
+    		"SELECT CAST(point_value AS float) AS points FROM assignments " +
+    				"WHERE assignment_id = ? AND course_id = ?";
+    public static String GET_MP_GRADE =
+    		"SELECT CAST(g.points_earned AS float) / CAST(a.point_value AS float) * 100 AS grade " + 
+    				"FROM assignments AS a " + 
+    				"INNER JOIN assignment_grades g " + 
+    				"ON g.assignment_id = a.assignment_id AND g.course_id = a.course_id " + 
+    				"WHERE g.student_id = ? AND g.course_id = ? AND a.marking_period = ? " + 
+    				"AND is_midterm = ? AND is_final = ?";
     public static String SHOW_GRADE =
     		"SELECT a.points_earned FROM assignment_grades a " +
     				"INNER JOIN students s " +
@@ -202,8 +232,22 @@ public class QueryUtils {
     				"ON g.assignment_id = a.assignment_id AND g.course_id = a.course_id " +
     				"WHERE g.student_id = ? AND g.course_id = ? AND a.marking_period = ? " +
     				"AND is_midterm = ? AND is_final = ?";
-    public static final String UPDATE_COURSE_GRADE_STUDENT = "UPDATE course_grades SET mp1 = ?, mp2 = ?, midterm_exam = ?, mp3 = ?, mp4 = ?, final_exam = ?, grade = ? "
-    		+ "WHERE course_id = ? AND student_id = ?";
+
+	public static String GET_PREV_AS_GRADE = 
+			"SELECT CAST(g.points_earned AS float) / CAST(a.point_value AS float) * 100, g.is_graded " + 
+			    	"FROM assignments AS a " + 
+			   		"INNER JOIN assignment_grades g " + 
+			   		"ON g.assignment_id = a.assignment_id AND g.course_id = a.course_id " + 
+			   		"WHERE g.student_id = ? AND g.course_id = ? AND a.marking_period = ? " + 
+			   		"AND is_midterm = ? AND is_final = ?";
+
+	public static String GET_COURSE_GRADES = 
+			"SELECT mp1, mp2, mp3, mp4, midterm_exam, final_exam " +
+					"FROM course_grades " +
+					"WHERE course_id = ? AND student_id = ?";
+			
+    public static final String UPDATE_COURSE_GRADE_STUDENT = "UPDATE course_grades SET mp1 = ?, mp2 = ?, midterm_exam = ?, mp3 = ?, mp4 = ?, final_exam = ?, grade = ? " +
+    		"WHERE course_id = ? AND student_id = ?";
     public static String ENTER_GRADE_SQL(int course_id, int assignment_id, int student_id, int points_earned, int points_possible) {
         return "INSERT INTO assignment_grades " +
         "(course_id, assignment_id, student_id, points_earned, points_possible, is_graded) " +

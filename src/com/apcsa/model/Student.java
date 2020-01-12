@@ -2,7 +2,9 @@ package com.apcsa.model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
+import com.apcsa.data.PowerSchool;
 import com.apcsa.model.User;
 
 public class Student extends User {
@@ -75,8 +77,12 @@ public class Student extends User {
 		    }
 		    return String.format("%.3f", new Object[] { Double.valueOf(this.gpa) });
 		  }
-	public void setClassRank(int i) {
-		// TODO Auto-generated method stub
+	public void updateClassRank() {
+		ArrayList<Student> students = PowerSchool.studentByGpa();
+		int counter = 1;
+		for (Student i: students) {
+			i.getStudentId();
+		}
 		
 	}
 
