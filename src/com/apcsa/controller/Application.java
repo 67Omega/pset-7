@@ -531,6 +531,7 @@ public class Application {
                 	
                 	PowerSchool.updateStudentMPGrade(mp, marking_period_grade, students.get(studentSelected - 1).getStudentId(), course_id);
                 	PowerSchool.calculateAndSetCourseGrade (mp1, mp2, mp3, mp4, fin, mid, students.get(studentSelected - 1).getStudentId(), course_id, realZero1, realZero2, realZero3, realZero4, realZero5, realZero6);
+                	PowerSchool.setStudentGpa(students.get(studentSelected - 1).getStudentId());
                 	System.out.print("\nSuccessfully entered.");
                 }
         	}        	
@@ -630,7 +631,13 @@ public class Application {
                 }
         	}        	
         }
-        
+       private void setGpa() {
+    	   if (weight = 1.0) {
+    		   switch (course_grade) {
+    		   
+    		   }
+    	   }
+       }
         private void deleteAssignment() throws ClassNotFoundException, SQLException {
         	int realZero1 = 1;
         	int realZero2 = 1;

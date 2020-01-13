@@ -240,7 +240,7 @@ public class PowerSchool {
     public static int addAssignment(int course_id, int assignment_id, int marking_period, int is_midterm, int is_final, String title, int point_value) throws ClassNotFoundException, SQLException{
     	  try (Connection conn = getConnection();
     	        	PreparedStatement stmt = conn.prepareStatement(QueryUtils.ADD_ASSIGNMENT)) {
-    		  		//System.out.print(course_id + assignment_id + marking_period + is_midterm + is_final + title + point_value);
+    		  		
     	            conn.setAutoCommit(false);
     	            stmt.setInt(1, course_id);
     	            stmt.setInt(2, assignment_id);
@@ -350,13 +350,13 @@ public class PowerSchool {
     				total_weight += 0.2;
     			}
     			
-    			if (realZero5 == 1) {
+    			if (realZero5 != 1) {
     				total_weight += 0.1;
     			}
-    			if (realZero6 == 1) {
+    			if (realZero6 != 1) {
     				total_weight += 0.1;
     			}
-    			
+    			System.out.println(total_weight);
     			System.out.print(mp1 +" "+ mp2 +" "+ midterm_exam +" "+ mp3 +" "+ mp4 + " " + final_exam +" "+ student_id + " " + course_id);
     			float grade = (float) (((mp1 + mp2 + mp3 + mp4) * 0.2 + (midterm_exam + final_exam) * 0.1)/total_weight);
     			stmt.setFloat(1, grade);
